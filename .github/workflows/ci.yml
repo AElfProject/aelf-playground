@@ -133,7 +133,7 @@ jobs:
         with:
           name: build
           path: |
-            build
+            client/build
 
   deploy:
     name: Deploy
