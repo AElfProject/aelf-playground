@@ -3,10 +3,6 @@ name: CI
 on:
   push:
     branches: ["develop"]
-  pull_request:
-    branches: ["develop"]
-
-  workflow_dispatch:
 
 jobs:
   format_client:
@@ -132,6 +128,36 @@ jobs:
       - name: Build
         run: yarn build
 
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: |
+            build
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: client/build
+
+      - name: Install Spin
+        uses: fermyon/actions/spin/setup@v1
+
+      - name: Build and deploy
+        uses: fermyon/actions/spin/deploy@v1
+        with:
+          fermyon_token: ${{ secrets.FERMYON_CLOUD_TOKEN }}
+
+  docker:
+    name: Docker
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -153,6 +179,11 @@ jobs:
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'develop') }}
             type=ref,event=tag
             type=ref,event=pr
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: client/build
 
       - name: Build and push
         uses: docker/build-push-action@v5
