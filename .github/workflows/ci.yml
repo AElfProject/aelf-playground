@@ -135,27 +135,6 @@ jobs:
           path: |
             client/build
 
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
-    needs: [build]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: build
-          path: client/build
-
-      - name: Install Spin
-        uses: fermyon/actions/spin/setup@v1
-
-      - name: Build and deploy
-        uses: fermyon/actions/spin/deploy@v1
-        with:
-          fermyon_token: ${{ secrets.FERMYON_CLOUD_TOKEN }}
-          run_build: false
-          manifest_file: client/spin.toml
-
   docker:
     name: Docker
     runs-on: ubuntu-latest
