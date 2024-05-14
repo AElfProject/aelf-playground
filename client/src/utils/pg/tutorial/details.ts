@@ -5,17 +5,10 @@ export const TUTORIAL_LEVELS = [
 ] as const;
 
 export const TUTORIAL_FRAMEWORKS: readonly FrameworkName[] = [
-  "Anchor",
   "Native",
-  "Seahorse",
 ] as const;
 
-export const TUTORIAL_LANGUAGES = [
-  "Python",
-  "Rust",
-  "TypeScript",
-  "CSharp",
-] as const;
+export const TUTORIAL_LANGUAGES = ["TypeScript", "CSharp"] as const;
 
 export const TUTORIAL_CATEGORIES = [
   "Compression",

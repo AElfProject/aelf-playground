@@ -1,4 +1,3 @@
-import { Endpoint } from "../../constants";
 import { PgConnection } from "./connection";
 import { createDerivable, declareDerivable, derivable } from "./decorators";
 import { PgSettings } from "./settings";
@@ -51,60 +50,20 @@ const createBlockExplorer = (b: BlockExplorerImpl) => {
   return b as BlockExplorer;
 };
 
-const SOLANA_EXPLORER = createBlockExplorer({
-  name: "Solana Explorer",
-  url: "https://explorer.solana.com",
+const AELF_EXPLORER = createBlockExplorer({
+  name: "AElf Explorer",
+  url: "https://explorer-test-side02.aelf.io",
   getClusterParam: () => {
     switch (PgConnection.cluster) {
-      case "mainnet-beta":
-        return "";
       case "testnet":
         return "?cluster=testnet";
-      case "devnet":
-        return "?cluster=devnet";
-      case "localnet":
-        return "?cluster=custom&customUrl=" + Endpoint.LOCALHOST;
+      case "custom":
+        return "?cluster=custom&customUrl=";
     }
   },
 });
 
-const SOLSCAN = createBlockExplorer({
-  name: "Solscan",
-  url: "https://solscan.io",
-  getClusterParam: () => {
-    switch (PgConnection.cluster) {
-      case "mainnet-beta":
-        return "";
-      case "testnet":
-        return "?cluster=testnet";
-      case "devnet":
-        return "?cluster=devnet";
-      case "localnet":
-        // No support https://solana.stackexchange.com/a/2330
-        return "";
-    }
-  },
-});
-
-const SOLANA_FM = createBlockExplorer({
-  name: "Solana FM",
-  url: "https://solana.fm",
-  getClusterParam: () => {
-    switch (PgConnection.cluster) {
-      case "mainnet-beta":
-        return "";
-      case "testnet":
-        return "?cluster=testnet-solana";
-      case "devnet":
-        return "?cluster=devnet-solana";
-      case "localnet":
-        // Doesn't work with protocol ("http") prefix
-        return "?cluster=custom-" + new URL(Endpoint.LOCALHOST).host;
-    }
-  },
-});
-
-const EXPLORERS = [SOLANA_EXPLORER, SOLSCAN, SOLANA_FM];
+const EXPLORERS = [AELF_EXPLORER];
 
 const derive = () => ({
   /** The current block explorer based on user's block explorer setting */
@@ -112,7 +71,7 @@ const derive = () => ({
     derive: () => {
       return (
         EXPLORERS.find((be) => be.name === PgSettings.other.blockExplorer) ??
-        SOLANA_EXPLORER
+        AELF_EXPLORER
       );
     },
     onChange: [

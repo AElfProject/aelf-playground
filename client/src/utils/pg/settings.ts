@@ -45,7 +45,7 @@ interface Settings {
   /** Other settings */
   other: {
     /** Default block explorer */
-    blockExplorer: "Solana Explorer" | "Solscan" | "Solana FM";
+    blockExplorer: "AElf Explorer";
   };
   /** Wallet settings */
   wallet: {
@@ -56,7 +56,7 @@ interface Settings {
 
 const defaultState: Settings = {
   connection: {
-    endpoint: Endpoint.DEVNET,
+    endpoint: Endpoint.TESTNET,
     commitment: "confirmed",
     preflightChecks: true,
     priorityFee: "median",
@@ -76,7 +76,7 @@ const defaultState: Settings = {
     showTx: true,
   },
   other: {
-    blockExplorer: "Solana Explorer",
+    blockExplorer: "AElf Explorer",
   },
   wallet: {
     automaticAirdrop: true,

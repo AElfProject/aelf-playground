@@ -776,14 +776,8 @@ export class PgCommon {
    */
   static getAirdropAmount(endpoint: string) {
     switch (endpoint) {
-      case Endpoint.PLAYNET:
-        return 1000;
-      case Endpoint.LOCALHOST:
-        return 100;
-      case Endpoint.DEVNET:
-        return 5;
       case Endpoint.TESTNET:
-        return 1;
+        return 50;
       default:
         return null;
     }

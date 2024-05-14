@@ -8,7 +8,6 @@ import {
 
 import { ExplorerLink } from "./ExplorerLink";
 import { PgCommon } from "../common";
-import { PgPlaynet } from "../playnet";
 import { PgSettings } from "../settings";
 import { PgView } from "../view";
 import { ConnectionOption, PgConnection } from "../connection";
@@ -137,9 +136,6 @@ export class PgTx {
   ) {
     const connection = opts?.connection ?? PgConnection.current;
 
-    // Don't confirm on playnet
-    if (PgPlaynet.isUrlPlaynet(connection.rpcEndpoint)) return;
-
     const result = await connection.confirmTransaction(
       txHash,
       opts?.commitment
@@ -155,9 +151,6 @@ export class PgTx {
   static notify(txHash: string) {
     // Check setting
     if (!PgSettings.notification.showTx) return;
-
-    // Don't show on playnet
-    if (PgPlaynet.isUrlPlaynet()) return;
 
     PgView.setToast(ExplorerLink, {
       componentProps: { txHash },

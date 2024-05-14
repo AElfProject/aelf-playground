@@ -5,7 +5,6 @@ import {
   PgCommon,
   PgExplorer,
   PgGlobal,
-  PgPackage,
   PgProgramInfo,
   PgServer,
   PgSettings,
@@ -42,25 +41,20 @@ export const build = createCmd({
  */
 const processBuild = async () => {
   const buildFiles = getBuildFiles();
-  const pythonFiles = buildFiles.filter(([fileName]) =>
-    fileName.toLowerCase().endsWith(".py")
-  );
 
-  if (pythonFiles.length > 0) {
-    return await buildPython(pythonFiles);
-  }
-
-  return await buildRust(buildFiles);
+  return await buildContract(buildFiles);
 };
 
 /**
- * Build rust files and return the output.
+ * Build contract files and return the output.
  *
- * @param files Rust files from `src/`
+ * @param files Files from `src/`
  * @returns Build output from stderr(not only errors)
  */
-const buildRust = async (files: TupleFiles) => {
-  if (!files.length) throw new Error("Couldn't find any Rust files.");
+const buildContract = async (files: TupleFiles) => {
+  if (!files.length) throw new Error("Couldn't find any files.");
+
+  // TODO: implement build for server.
 
   const resp = await PgServer.build({
     files,
@@ -75,41 +69,6 @@ const buildRust = async (files: TupleFiles) => {
   });
 
   return { stderr: resp.stderr };
-};
-
-/**
- * Convert Python files into Rust with seahorse-compile-wasm and run `_buildRust`.
- *
- * @param pythonFiles Python files in `src/`
- * @returns Build output from stderr(not only errors)
- */
-const buildPython = async (pythonFiles: TupleFiles) => {
-  const { compileSeahorse } = await PgPackage.import("seahorse-compile");
-
-  const rustFiles = pythonFiles.flatMap(([path, content]) => {
-    const seahorseProgramName =
-      PgExplorer.getItemNameFromPath(path).split(".py")[0];
-    const compiledContent = compileSeahorse(content, seahorseProgramName);
-
-    if (compiledContent.length === 0) {
-      throw new Error("Seahorse compile failed");
-    }
-
-    // Seahorse compile outputs a flattened array like [filepath, content, filepath, content]
-    const files: TupleFiles = [];
-    for (let i = 0; i < compiledContent.length; i += 2) {
-      const path = compiledContent[i];
-      let content = compiledContent[i + 1];
-      // The build server detects #[program] to determine if Anchor
-      // Seahorse (without rustfmt) outputs # [program]
-      content = content.replace("# [program]", "#[program]");
-      files.push([path, content]);
-    }
-
-    return files;
-  });
-
-  return await buildRust(rustFiles);
 };
 
 /**

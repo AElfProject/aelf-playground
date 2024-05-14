@@ -8,7 +8,6 @@ import Button from "../../../../../components/Button";
 import Foldable from "../../../../../components/Foldable";
 import { Emoji } from "../../../../../constants";
 import {
-  PgCommand,
   PgCommon,
   PgConnection,
   PgSettings,
@@ -122,7 +121,8 @@ const Instruction: FC<InstructionProps> = ({ index, idlInstruction }) => {
       await PgCommon.sleep(
         PgConnection.current.rpcEndpoint.startsWith("https") ? 1500 : 200
       );
-      await PgCommand.solana.run(`confirm ${showLogTxHash} -v`);
+      // TODO: aelf tx hash
+      // await PgCommand.solana.run(`confirm ${showLogTxHash} -v`);
     }
   };
 

@@ -8,16 +8,11 @@ import Select from "../../components/Select";
 import Text from "../../components/Text";
 import { Info } from "../../components/Icons";
 import { Endpoint, NetworkName, NETWORKS } from "../../constants";
-import { PgCommand, PgCommon, PgSettings, PgView } from "../../utils/pg";
+import { PgCommon, PgSettings, PgView } from "../../utils/pg";
 
 const EndpointSetting = () => {
   const options = useMemo(
-    () =>
-      NETWORKS.map((n) => ({ value: n.endpoint, label: n.name })).filter((n) =>
-        process.env.NODE_ENV === "production"
-          ? n.label !== NetworkName.PLAYNET
-          : true
-      ),
+    () => NETWORKS.map((n) => ({ value: n.endpoint, label: n.name })),
     []
   );
 
@@ -67,7 +62,10 @@ const CustomEndpoint = () => {
       closeButton
       buttonProps={{
         text: "Add",
-        onSubmit: () => PgCommand.solana.run(`config set -u ${value}`),
+        onSubmit: () => {
+          // TODO: aelf command set endpoint
+          // PgCommand.solana.run(`config set -u ${value}`)
+        },
         disabled: !value,
         fullWidth: true,
         style: { height: "2.5rem", marginTop: "-0.25rem" },

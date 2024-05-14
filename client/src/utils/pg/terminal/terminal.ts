@@ -8,7 +8,6 @@ import { PgShell } from "./shell";
 import {
   Emoji,
   EventName,
-  GITHUB_URL,
   Id,
   OTHER_ERROR,
   PROGRAM_ERROR,
@@ -51,9 +50,6 @@ export class PgTerminal {
   static readonly DEFAULT_TEXT = [
     `Welcome to ${PgTerminal.bold(PROJECT_NAME)}.`,
     `Popular crates for AElf development are available to use.`,
-    `See the list of available crates and request new crates from ${PgTerminal.underline(
-      GITHUB_URL
-    )}`,
     `Type ${PgTerminal.bold("help")} to see all commands.\n`,
   ].join("\n\n");
 

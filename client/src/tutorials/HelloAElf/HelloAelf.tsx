@@ -1,7 +1,7 @@
 import { Tutorial } from "../../components/Tutorial";
 import { PgExplorer, PgView } from "../../utils/pg";
 
-const HelloAelf = () => (
+const HelloAElf = () => (
   <Tutorial
     // About section that will be shown under the description of the tutorial page
     about={require("./about.md")}
@@ -40,4 +40,4 @@ const HelloAelf = () => (
   />
 );
 
-export default HelloAelf;
+export default HelloAElf;

@@ -10,7 +10,6 @@ import {
   PgCommand,
   PgCommon,
   PgExplorer,
-  PgPackage,
   PgProgramInfo,
   PgTerminal,
   PgTheme,
@@ -404,86 +403,6 @@ const Monaco = () => {
       const lang = PgExplorer.getCurrentFileLanguage();
       if (!lang) return;
 
-      let formatRust;
-      const isCurrentFileRust = lang === Lang.RUST;
-      if (isCurrentFileRust) {
-        formatRust = async () => {
-          const currentContent = editor.getValue();
-          const model = editor.getModel();
-          if (!model) return;
-
-          const { rustfmt } = await PgPackage.import("rustfmt");
-
-          let result;
-          try {
-            result = rustfmt(currentContent);
-          } catch (e: any) {
-            result = { error: () => e.message };
-          }
-          if (result.error()) {
-            PgTerminal.log(PgTerminal.error("Unable to format the file."));
-            return;
-          }
-
-          const pos = editor.getPosition();
-          if (!pos) return;
-          let cursorOffset = model.getOffsetAt(pos);
-
-          const currentLine = model.getLineContent(pos.lineNumber);
-          const beforeLine = model.getLineContent(pos.lineNumber - 1);
-          const afterLine =
-            pos.lineNumber === model.getLineCount()
-              ? ""
-              : model.getLineContent(pos.lineNumber + 1);
-          const searchText = [beforeLine, currentLine, afterLine].reduce(
-            (acc, cur) => acc + cur + "\n",
-            ""
-          );
-
-          const formattedCode = result.code!();
-          const searchIndex = formattedCode.indexOf(searchText);
-          if (searchIndex !== -1) {
-            // Check if there are multiple instances of the same searchText
-            const nextSearchIndex = formattedCode.indexOf(
-              searchText,
-              searchIndex + searchText.length
-            );
-            if (nextSearchIndex === -1) {
-              cursorOffset =
-                searchIndex +
-                cursorOffset -
-                model.getOffsetAt({
-                  lineNumber: pos.lineNumber - 1,
-                  column: 0,
-                });
-            }
-          }
-
-          const endLineNumber = model.getLineCount();
-          const endColumn = model.getLineContent(endLineNumber).length + 1;
-
-          // Execute edits pushes the changes to the undo stack
-          editor.executeEdits(null, [
-            {
-              text: formattedCode,
-              range: {
-                startLineNumber: 1,
-                endLineNumber,
-                startColumn: 0,
-                endColumn,
-              },
-            },
-          ]);
-
-          const resultPos = model.getPositionAt(cursorOffset);
-          editor.setPosition(resultPos);
-
-          if (ev?.fromTerminal) {
-            PgTerminal.log(PgTerminal.success("Format successful."));
-          }
-        };
-      }
-
       const isCurrentFileJsLike = PgExplorer.isCurrentFileJsLike();
       let formatJSTS;
       if (isCurrentFileJsLike) {
@@ -593,9 +512,7 @@ const Monaco = () => {
 
       // From keybind
       if (!ev) {
-        if (isCurrentFileRust) {
-          formatRust && (await formatRust());
-        } else if (isCurrentFileJsLike) {
+        if (isCurrentFileJsLike) {
           formatJSTS && (await formatJSTS());
         } else if (isCurrentFileJSON) {
           formatJSON && formatJSON();
@@ -606,18 +523,6 @@ const Monaco = () => {
 
       // From terminal
       switch (ev.lang) {
-        case Lang.RUST: {
-          if (!isCurrentFileRust) {
-            PgTerminal.log(
-              PgTerminal.warning("Current file is not a Rust file.")
-            );
-            return;
-          }
-
-          formatRust && (await formatRust());
-          break;
-        }
-
         case Lang.TYPESCRIPT: {
           if (!isCurrentFileJsLike) {
             PgTerminal.log(
@@ -688,9 +593,9 @@ const Monaco = () => {
 
       // Update in editor
       const currentLang = PgExplorer.getCurrentFileLanguage();
-      const isRust = currentLang === Lang.RUST;
+
       const isPython = currentLang === Lang.PYTHON;
-      if (!isRust && !isPython) return;
+      if (!isPython) return;
 
       const editorContent = editor.getValue();
       const indices = getProgramIdStartAndEndIndex(editorContent, isPython);

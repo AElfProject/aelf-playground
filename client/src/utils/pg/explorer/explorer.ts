@@ -1365,8 +1365,6 @@ export class PgExplorer {
    */
   static getLanguageFromPath(path: string) {
     switch (PgExplorer.getExtensionFromPath(path)) {
-      case "rs":
-        return Lang.RUST;
       case "py":
         return Lang.PYTHON;
       case "js":
@@ -1379,6 +1377,8 @@ export class PgExplorer {
         return Lang.TYPESCRIPT_TEST;
       case "json":
         return Lang.JSON;
+      case "cs":
+        return Lang.CSHARP;
       default:
         return null;
     }

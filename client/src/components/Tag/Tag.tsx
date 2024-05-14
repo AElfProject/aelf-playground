@@ -114,10 +114,6 @@ const Language: FC<LanguageProps> = ({ value, ...props }) => {
 
 const getLanguageExtension = (lang: TutorialLanguage) => {
   switch (lang) {
-    case "Python":
-      return ".py";
-    case "Rust":
-      return ".rs";
     case "TypeScript":
       return ".ts";
     case "CSharp":

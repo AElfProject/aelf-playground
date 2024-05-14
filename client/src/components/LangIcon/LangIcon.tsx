@@ -3,11 +3,11 @@ import styled from "styled-components";
 
 import { Lang, PgExplorer } from "../../utils/pg";
 import {
+  CSharp,
   JavaScript,
   Json,
   Python,
   QuestionMark,
-  Rust,
   TypeScript,
 } from "../Icons";
 
@@ -18,8 +18,6 @@ interface LangIconProps {
 const LangIcon: FC<LangIconProps> = ({ fileName }) => {
   const Icon = useMemo(() => {
     switch (PgExplorer.getLanguageFromPath(fileName)) {
-      case Lang.RUST:
-        return <Rust color="textSecondary" />;
       case Lang.PYTHON:
         return <Python />;
       case Lang.JAVASCRIPT:
@@ -32,6 +30,8 @@ const LangIcon: FC<LangIconProps> = ({ fileName }) => {
         return <TypeScript isTest />;
       case Lang.JSON:
         return <Json />;
+      case Lang.CSHARP:
+        return <CSharp />;
       default:
         return <QuestionMark />;
     }

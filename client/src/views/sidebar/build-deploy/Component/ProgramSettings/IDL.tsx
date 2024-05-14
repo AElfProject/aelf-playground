@@ -143,12 +143,14 @@ const InitOrUpgrade = () => {
     switch (state) {
       case InitOrUpgradeState.CAN_INIT: {
         setState(InitOrUpgradeState.IS_INITIALIZING);
-        await PgCommand.anchor.run("idl init");
+        // TODO: aelf dll init
+        // await PgCommand.anchor.run("idl init");
         break;
       }
       case InitOrUpgradeState.CAN_UPGRADE: {
         setState(InitOrUpgradeState.IS_UPGRADING);
-        await PgCommand.anchor.run("idl upgrade");
+        // TODO: aelf dll upgrade
+        // await PgCommand.anchor.run("idl upgrade");
         break;
       }
     }

@@ -11,10 +11,8 @@ import {
   PgTerminal,
   Lang,
   PgCommon,
-  PgPackage,
   PgCommand,
   PgTheme,
-  PgFramework,
 } from "../../../utils/pg";
 import { useKeybind, useSendAndReceiveCustomEvent } from "../../../hooks";
 
@@ -210,15 +208,6 @@ const CodeMirror = () => {
       (async () => {
         let languageExtensions;
         switch (PgExplorer.getCurrentFileLanguage()) {
-          case Lang.RUST: {
-            const { rustExtensions } = await import(
-              "./extensions/languages/rust"
-            );
-            const framework = await PgFramework.getFromFiles();
-            languageExtensions = rustExtensions(framework?.name === "Anchor");
-            break;
-          }
-
           case Lang.PYTHON: {
             const { pythonExtensions } = await import(
               "./extensions/languages/python"
@@ -321,70 +310,6 @@ const CodeMirror = () => {
       const lang = PgExplorer.getCurrentFileLanguage();
       if (!lang) return;
 
-      let formatRust;
-      const isCurrentFileRust = lang === Lang.RUST;
-      if (isCurrentFileRust) {
-        formatRust = async () => {
-          const { rustfmt } = await PgPackage.import("rustfmt");
-
-          const currentContent = editor.state.doc.toString();
-          let result;
-          try {
-            result = rustfmt(currentContent);
-          } catch (e: any) {
-            result = { error: () => e.message };
-          }
-          if (result.error()) {
-            PgTerminal.log(PgTerminal.error("Unable to format the file."));
-            return;
-          }
-
-          const formattedCode = result.code!();
-
-          let cursorOffset = editor.state.selection.ranges[0].from;
-          const currentLine = editor.state.doc.lineAt(cursorOffset);
-          const isFirstOrLastLine =
-            currentLine.number !== 1 ||
-            currentLine.number !== editor.state.doc.lines;
-          if (!isFirstOrLastLine) {
-            const beforeLine = editor.state.doc.line(currentLine.number - 1);
-            const afterLine = editor.state.doc.line(currentLine.number + 1);
-            const searchText = currentContent.substring(
-              beforeLine.from,
-              afterLine.to
-            );
-
-            const searchIndex = formattedCode.indexOf(searchText);
-            if (searchIndex !== -1) {
-              // Check if there are multiple instances of the same searchText
-              const nextSearchIndex = formattedCode.indexOf(
-                searchText,
-                searchIndex + searchText.length
-              );
-              if (nextSearchIndex === -1) {
-                cursorOffset = searchIndex + cursorOffset - beforeLine.from;
-              }
-            }
-          }
-
-          editor.dispatch({
-            changes: {
-              from: 0,
-              to: currentContent.length,
-              insert: formattedCode,
-            },
-            selection: {
-              anchor: cursorOffset,
-              head: cursorOffset,
-            },
-          });
-
-          if (ev?.fromTerminal) {
-            PgTerminal.log(PgTerminal.success("Format successful."));
-          }
-        };
-      }
-
       const isCurrentFileJsLike = PgExplorer.isCurrentFileJsLike();
       let formatJSTS;
       if (isCurrentFileJsLike) {
@@ -464,9 +389,7 @@ const CodeMirror = () => {
 
       // From keybind
       if (!ev) {
-        if (isCurrentFileRust) {
-          formatRust && (await formatRust());
-        } else if (isCurrentFileJsLike) {
+        if (isCurrentFileJsLike) {
           formatJSTS && (await formatJSTS());
         } else if (isCurrentFileJSON) {
           formatJSON && formatJSON();
@@ -477,18 +400,6 @@ const CodeMirror = () => {
 
       // From terminal
       switch (ev.lang) {
-        case Lang.RUST: {
-          if (!isCurrentFileRust) {
-            PgTerminal.log(
-              PgTerminal.warning("Current file is not a Rust file.")
-            );
-            return;
-          }
-
-          formatRust && (await formatRust());
-          break;
-        }
-
         case Lang.TYPESCRIPT: {
           if (!isCurrentFileJsLike) {
             PgTerminal.log(
@@ -541,9 +452,8 @@ const CodeMirror = () => {
 
       // Update in editor
       const currentLang = PgExplorer.getCurrentFileLanguage();
-      const isRust = currentLang === Lang.RUST;
       const isPython = currentLang === Lang.PYTHON;
-      if (!isRust && !isPython) return;
+      if (!isPython) return;
 
       const editorContent = editor.state.doc.toString();
       const indices = getProgramIdStartAndEndIndex(editorContent, isPython);

@@ -9,7 +9,7 @@ export const useSyncBalance = () => {
   const { wallet } = useWallet();
 
   useEffect(() => {
-    if (!PgConnection.isReady(connection) || !wallet) {
+    if (!PgConnection.isReady() || !wallet) {
       PgWallet.balance = null;
       return;
     }

@@ -4,7 +4,7 @@ import { TUTORIAL_CATEGORIES, TUTORIAL_FRAMEWORKS } from "../../../utils/pg";
 export const FILTERS = [
   {
     param: "framework",
-    filters: TUTORIAL_FRAMEWORKS.filter((f) => f !== "Seahorse"),
+    filters: TUTORIAL_FRAMEWORKS,
   },
   {
     param: "categories",

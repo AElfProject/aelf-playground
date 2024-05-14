@@ -6,8 +6,6 @@ export interface ResourceProps {
   circleImage?: boolean;
 }
 
-const ROOT_DIR = "/icons/platforms/";
-
 export const RESOURCES: ResourceProps[] = [
   {
     title: "Cookbook",

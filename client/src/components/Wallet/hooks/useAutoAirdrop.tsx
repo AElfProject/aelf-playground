@@ -27,7 +27,7 @@ export const useAutoAirdrop = () => {
     const airdrop = async (_balance: typeof balance = balance) => {
       if (
         !automaticAirdrop ||
-        !PgConnection.isReady(connection) ||
+        !PgConnection.isReady() ||
         !wallet ||
         airdropping.current ||
         airdropError ||
