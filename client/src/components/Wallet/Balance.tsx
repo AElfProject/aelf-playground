@@ -8,7 +8,7 @@ const Balance = () => {
 
   if (balance === null) return null;
 
-  return <Wrapper>{balance === 0 ? 0 : balance.toFixed(3)} SOL</Wrapper>;
+  return <Wrapper>{balance === 0 ? 0 : balance.toFixed(3)} ELF</Wrapper>;
 };
 
 const Wrapper = styled.div`

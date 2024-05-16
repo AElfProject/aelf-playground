@@ -1,7 +1,8 @@
 import type { TupleFiles } from "../../../utils/pg";
 
 export const files: TupleFiles = [
-  ["src/lib.rs", require("./src/lib.rs")],
+  ["src/contract.cs", require("./src/contract.cs")],
+  ["src/state.cs", require("./src/state.cs")],
   ["client/client.ts", require("./client/client.ts.raw")],
   ["tests/native.test.ts", require("./tests/native.test.ts.raw")],
 ];

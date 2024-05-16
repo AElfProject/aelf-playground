@@ -227,8 +227,6 @@ const CloseButton = styled(Button)`
 const WalletMain = () => (
   <MainWrapper id={Id.WALLET_MAIN}>
     <Balance />
-    <Send />
-    <Transactions />
   </MainWrapper>
 );
 
