@@ -7,4 +7,5 @@ export enum Lang {
   TYPESCRIPT_TEST = "TypeScript Test",
   JSON = "JSON",
   CSHARP = "CSharp",
+  PROTOBUF = "Protobuf",
 }

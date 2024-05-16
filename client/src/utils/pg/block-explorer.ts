@@ -50,12 +50,14 @@ const createBlockExplorer = (b: BlockExplorerImpl) => {
   return b as BlockExplorer;
 };
 
+const AELF_EXPLORER_URL = "https://explorer-test-side02.aelf.io";
 const AELF_EXPLORER = createBlockExplorer({
   name: "AElf Explorer",
-  url: "https://explorer-test-side02.aelf.io",
+  url: AELF_EXPLORER_URL,
   getClusterParam: () => {
     return "";
   },
+  getAddressUrl: (address: string) => `${AELF_EXPLORER_URL}/address/${address}`,
 });
 
 const EXPLORERS = [AELF_EXPLORER];

@@ -3,9 +3,7 @@ import styled, { css } from "styled-components";
 import { Rnd } from "react-rnd";
 
 import Balance from "./Balance";
-import Send from "./Send";
 import Settings from "./Settings";
-import Transactions from "./Transactions";
 import Button from "../Button";
 import FadeIn from "../FadeIn";
 import Input from "../Input";
