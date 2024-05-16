@@ -15,10 +15,11 @@ import type {
   CurrentWallet,
   SerializedWallet,
   StandardWallet,
-  StandardWalletProps,
   Wallet,
   WalletAccount,
 } from "./types";
+// @ts-ignore
+import AElf from "aelf-sdk";
 
 const defaultState: Wallet = {
   state: "setup",
@@ -79,7 +80,6 @@ const derive = () => ({
    *
    * It will be one of the following:
    * - The Playground Wallet
-   * - A Wallet Standard wallet
    * - `null` if not connected.
    */
   current: createDerivable({
@@ -97,11 +97,6 @@ const derive = () => ({
 
           return PgWallet.createWallet(currentAccount);
         }
-
-        case "sol":
-          if (!PgWallet.standard || PgWallet.standard.connecting) return null;
-          if (!PgWallet.standard.connected) await PgWallet.standard.connect();
-          return PgWallet.standard as StandardWalletProps;
 
         case "disconnected":
         case "setup":
@@ -337,12 +332,14 @@ class _PgWallet {
    */
   static createWallet(account: WalletAccount): CurrentWallet {
     const keypair = Keypair.fromSecretKey(Uint8Array.from(account.kp));
+    const wallet = AElf.wallet.getWalletByPrivateKey(keypair.secretKey);
 
     return {
       isPg: true,
       keypair,
       name: account.name,
       publicKey: keypair.publicKey,
+      wallet,
 
       async signTransaction<T extends AnyTransaction>(tx: T) {
         if ((tx as VersionedTransaction).version) {

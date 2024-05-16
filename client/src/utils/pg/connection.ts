@@ -1,8 +1,9 @@
-import { clusterApiUrl, Connection, ConnectionConfig } from "@solana/web3.js";
+import { ConnectionConfig } from "@solana/web3.js";
 
 import { PgCommon } from "./common";
 import { createDerivable, declareDerivable, derivable } from "./decorators";
 import { PgSettings } from "./settings";
+import { ConnectionAElf } from "./connection-aelf";
 
 /** Optional `connection` prop */
 export interface ConnectionOption {
@@ -94,11 +95,8 @@ class _PgConnection {
     endpoint: string = PgConnection.current.rpcEndpoint
   ): Promise<Cluster> {
     // Local
-    if (clusterApiUrl("testnet")) {
-      return "testnet";
-    }
 
-    return "custom";
+    return "testnet";
   }
 
   /**
@@ -108,10 +106,7 @@ class _PgConnection {
    * @returns a new `Connection` instance
    */
   static create(opts?: { endpoint?: string } & ConnectionConfig) {
-    return new Connection(
-      opts?.endpoint ?? PgSettings.connection.endpoint,
-      opts ?? PgSettings.connection.commitment
-    );
+    return new ConnectionAElf(opts?.endpoint);
   }
 
   /**

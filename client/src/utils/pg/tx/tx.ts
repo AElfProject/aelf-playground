@@ -1,7 +1,6 @@
 import {
   Commitment,
   ComputeBudgetProgram,
-  Connection,
   Signer,
   Transaction,
 } from "@solana/web3.js";
@@ -12,6 +11,7 @@ import { PgSettings } from "../settings";
 import { PgView } from "../view";
 import { ConnectionOption, PgConnection } from "../connection";
 import { CurrentWallet, PgWallet, WalletOption } from "../wallet";
+import { ConnectionAElf } from "../connection-aelf";
 
 type WithTimeStamp<T> = T & {
   /** UNIX timestamp of the last cache */
@@ -173,7 +173,10 @@ export class PgTx {
    *
    * @returns the latest blockhash
    */
-  private static async _getLatestBlockhash(conn: Connection, force?: boolean) {
+  private static async _getLatestBlockhash(
+    conn: ConnectionAElf,
+    force?: boolean
+  ) {
     // Check whether the latest saved blockhash is still valid
     const timestamp = PgCommon.getUnixTimstamp();
 
@@ -200,7 +203,7 @@ export class PgTx {
    * @param conn `Connection` object to use
    * @returns the priority fee information
    */
-  private static async _getPriorityFee(conn: Connection) {
+  private static async _getPriorityFee(conn: ConnectionAElf) {
     // Check whether the priority fee info has expired
     const timestamp = PgCommon.getUnixTimstamp();
 

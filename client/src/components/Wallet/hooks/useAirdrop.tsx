@@ -29,27 +29,24 @@ export const useAirdrop = () => {
         PgTerminal.log(PgTerminal.info("Sending an airdrop request..."));
 
         const conn = PgConnection.current;
-        const walletPk = PgWallet.current!.publicKey;
+        const address = PgWallet.current!.wallet.address;
 
         // Airdrop tx is sometimes successful even when the balance hasn't
         // changed. To solve this, we check before and after balance instead
         // of confirming the tx.
-        const beforeBalance = await conn.getBalance(walletPk, "processed");
+        const beforeBalance = await conn.getBalance(address);
 
-        const txHash = await conn.requestAirdrop(
-          walletPk,
-          PgCommon.solToLamports(airdropAmount)
-        );
+        const txHash = await conn.requestAirdrop(address);
         PgTx.notify(txHash);
 
         // Allow enough time for balance to update by waiting for confirmation
         await PgTx.confirm(txHash, conn);
 
-        const afterBalance = await conn.getBalance(walletPk, "processed");
+        const afterBalance = await conn.getBalance(address);
         if (afterBalance > beforeBalance) {
           msg = `${Emoji.CHECKMARK} ${PgTerminal.success(
             "Success."
-          )} Received ${PgTerminal.bold(airdropAmount.toString())} SOL.`;
+          )} Received ${PgTerminal.bold(airdropAmount.toString())} ELF.`;
         } else {
           msg = `${Emoji.CROSS} ${PgTerminal.error(
             "Error receiving airdrop."

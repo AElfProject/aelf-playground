@@ -44,10 +44,7 @@ export const useAutoAirdrop = () => {
       try {
         airdropping.current = true;
 
-        const txHash = await connection.requestAirdrop(
-          wallet.publicKey,
-          PgCommon.solToLamports(airdropAmount)
-        );
+        const txHash = await connection.requestAirdrop(wallet.wallet.address);
         await PgTx.confirm(txHash, {
           connection: connection,
           commitment: "finalized",
@@ -57,8 +54,8 @@ export const useAutoAirdrop = () => {
         setAirdropError(true);
       } finally {
         airdropping.current = false;
-        _balance = PgCommon.lamportsToSol(
-          await connection.getBalance(wallet.publicKey)
+        _balance = PgCommon.smallestUnitToElf(
+          await connection.getBalance(wallet.wallet.address)
         );
         airdrop(_balance);
       }

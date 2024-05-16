@@ -15,7 +15,7 @@ import type { Wallet as SolanaWallet } from "@solana/wallet-adapter-react";
 /** Wallet state */
 export interface Wallet {
   /** Wallet connection state */
-  state: "setup" | "disconnected" | "pg" | "sol";
+  state: "setup" | "disconnected" | "pg";
   /** All accounts */
   accounts: WalletAccount[];
   /** Current wallet index */
@@ -52,10 +52,10 @@ export type SerializedWallet = Pick<
 export type AnyTransaction = Transaction | VersionedTransaction;
 
 /**
- * The current wallet which can be a Playground Wallet, a Wallet Standard Wallet
+ * The current wallet which can be a Playground Wallet
  * or `null` if disconnected.
  */
-export type CurrentWallet = PgWalletProps | StandardWalletProps;
+export type CurrentWallet = PgWalletProps;
 
 /** Wallet Standard wallet */
 export type StandardWallet = StandardWalletProps | Adapter;
@@ -66,6 +66,11 @@ interface PgWalletProps extends DefaultWalletProps {
   isPg: true;
   /** Keypair of the Playground Wallet account */
   keypair: Keypair;
+  wallet: AElfWallet;
+}
+
+interface AElfWallet {
+  address: string;
 }
 
 /** All wallets other than Playground Wallet */

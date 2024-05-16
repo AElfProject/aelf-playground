@@ -12,6 +12,7 @@ import { PgProgramInteraction } from "../program-interaction";
 import { PgTerminal } from "../terminal";
 import { CurrentWallet, PgWallet, StandardWallet } from "../wallet";
 import type { MergeUnion, OrString } from "../types";
+import { ConnectionAElf } from "../connection-aelf";
 
 /** Options to use when running a script/test */
 interface ClientParams {
@@ -392,77 +393,6 @@ export class PgClient {
    * @returns the overridden package
    */
   private static _overridePackage(name: OrString<ClientPackageName>, pkg: any) {
-    // Anchor
-    if (name === "@coral-xyz/anchor" || name === "@project-serum/anchor") {
-      const providerName =
-        name === "@coral-xyz/anchor" ? "AnchorProvider" : "Provider";
-
-      // Add `AnchorProvider.local()`
-      pkg[providerName].local = (
-        url?: string,
-        opts: web3.ConfirmOptions = anchor.AnchorProvider.defaultOptions()
-      ) => {
-        const connection = PgConnection.create({
-          endpoint: url ?? "http://localhost:8899",
-          commitment: opts.commitment,
-        });
-
-        const wallet = this._getPg().wallet;
-        if (!wallet) throw new Error("Wallet not connected");
-
-        const provider = new anchor.AnchorProvider(connection, wallet, opts);
-        return setAnchorWallet(provider);
-      };
-
-      // Add `AnchorProvider.env()`
-      pkg[providerName].env = () => {
-        const provider = this._getPg().program?.provider;
-        if (!provider) throw new Error("Provider not ready");
-        return setAnchorWallet(provider);
-      };
-
-      /**
-       * Override `provider.wallet` to have `payer` field with the wallet
-       * keypair in order to have the same behavior as local.
-       */
-      const setAnchorWallet = (provider: any) => {
-        if (provider.wallet.isPg) {
-          provider.wallet = {
-            ...provider.wallet,
-            payer: provider.wallet.keypair,
-          };
-        }
-
-        return provider;
-      };
-
-      // Add `anchor.workspace`
-      if (PgProgramInfo.idl) {
-        const snakeCaseName = PgProgramInfo.idl.name;
-        const names = [
-          PgCommon.toPascalFromSnake(snakeCaseName), // default before 0.29.0
-          PgCommon.toCamelFromSnake(snakeCaseName),
-          PgCommon.toKebabFromSnake(snakeCaseName),
-          snakeCaseName,
-        ];
-
-        pkg.workspace = {};
-        for (const name of names) {
-          if (pkg.workspace[name]) continue;
-          Object.defineProperty(pkg.workspace, name, {
-            get: () => {
-              let program = this._getPg().program;
-              if (program) {
-                const { idl, programId } = program;
-                program = new anchor.Program(idl, programId, pkg.getProvider());
-              }
-              return program;
-            },
-          });
-        }
-      }
-    }
-
     return pkg;
   }
 
@@ -475,7 +405,7 @@ export class PgClient {
     /** Utilities to be available under the `pg` namespace */
     interface Pg {
       /** Playground connection instance */
-      connection: web3.Connection;
+      connection: ConnectionAElf;
       /** Current connected wallet */
       wallet?: CurrentWallet;
       /** All available wallets, including the standard wallets */

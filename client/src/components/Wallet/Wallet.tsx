@@ -8,19 +8,13 @@ import Settings from "./Settings";
 import Transactions from "./Transactions";
 import Button from "../Button";
 import FadeIn from "../FadeIn";
-import Img from "../Img";
 import Input from "../Input";
 import Menu, { MenuItemProps } from "../Menu";
 import Tooltip from "../Tooltip";
 import { Close, ShortArrow } from "../Icons";
 import { ClassName, Id } from "../../constants";
 import { Fn, PgCommon, PgTheme, PgWallet } from "../../utils/pg";
-import {
-  useAutoAirdrop,
-  useDarken,
-  useStandardAccountChange,
-  useSyncBalance,
-} from "./hooks";
+import { useAutoAirdrop, useDarken, useSyncBalance } from "./hooks";
 import {
   useKeybind,
   useOnClickOutside,
@@ -33,7 +27,6 @@ const Wallet = () => {
 
   const { wallet } = useWallet();
 
-  useStandardAccountChange();
   useSyncBalance();
   useAutoAirdrop();
 
@@ -137,7 +130,7 @@ const WalletName = () => {
     []
   );
 
-  // Show al lof the Playground Wallet accounts
+  // Show all of the Playground Wallet accounts
   const pgAccounts: MenuItemProps[] = PgWallet.accounts.map((acc, i) => ({
     name: getAccountDisplayName(
       acc.name,
@@ -147,30 +140,12 @@ const WalletName = () => {
     hoverColor: "textPrimary",
   }));
 
-  // Show all of the connected Wallet Standard accounts
-  const standardAccounts: MenuItemProps[] =
-    PgWallet.getConnectedStandardWallets().map((wallet) => ({
-      name: getAccountDisplayName(wallet.name, wallet.publicKey!.toBase58()),
-      onClick: () => {
-        PgWallet.update({ state: "sol", standardName: wallet.name });
-      },
-      icon: <Img src={wallet.icon} alt={wallet.name} />,
-      hoverColor: "secondary",
-    }));
-
   if (!wallet) return null;
 
   return (
-    <Menu.Dropdown
-      items={pgAccounts.concat(standardAccounts)}
-      onShow={darken}
-      onHide={lighten}
-    >
+    <Menu.Dropdown items={pgAccounts} onShow={darken} onHide={lighten}>
       <Tooltip element="Accounts">
         <WalletTitleWrapper>
-          {!wallet.isPg && (
-            <WalletTitleIcon src={wallet.icon} alt={wallet.name} />
-          )}
           <WalletTitleText>
             {getAccountDisplayName(wallet.name, walletPkStr!)}
           </WalletTitleText>
@@ -184,12 +159,6 @@ const WalletName = () => {
 const WalletTitleWrapper = styled.div`
   ${({ theme }) => css`
     ${PgTheme.convertToCSS(theme.components.wallet.top.title.default)};
-  `}
-`;
-
-const WalletTitleIcon = styled(Img)`
-  ${({ theme }) => css`
-    ${PgTheme.convertToCSS(theme.components.wallet.top.title.icon)};
   `}
 `;
 

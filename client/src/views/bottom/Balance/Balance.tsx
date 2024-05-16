@@ -14,7 +14,7 @@ export const Balance = () => {
       <Seperator>|</Seperator>
 
       <Tooltip element="Current balance">
-        <BalanceText>{`${balance} SOL`}</BalanceText>
+        <BalanceText>{`${balance} ELF`}</BalanceText>
       </Tooltip>
     </>
   );

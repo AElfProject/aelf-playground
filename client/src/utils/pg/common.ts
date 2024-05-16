@@ -230,17 +230,17 @@ export class PgCommon {
   }
 
   /**
-   * @returns lamports amount to equivalent Sol
+   * @returns smallest amount to equivalent Elf
    */
-  static lamportsToSol(lamports: number) {
-    return lamports / PgCommon._LAMPORTS_PER_SOL;
+  static smallestUnitToElf(smallestUnit: number) {
+    return smallestUnit / PgCommon._DIVISOR_AELF;
   }
 
   /**
-   * @returns Sol amount to equivalent lamports
+   * @returns Elf amount to equivalent smallest amount
    */
-  static solToLamports(sol: number) {
-    return sol * PgCommon._LAMPORTS_PER_SOL;
+  static elfToSmallestUnit(elf: number) {
+    return elf * PgCommon._DIVISOR_AELF;
   }
 
   /**
@@ -1194,7 +1194,7 @@ export class PgCommon {
    * Intentionally not using web3.js.LAMPORTS_PER_SOL to not increase main
    * bundle size since `PgCommon` is getting loaded at the start of the app.
    */
-  private static _LAMPORTS_PER_SOL = 1000000000;
+  private static _DIVISOR_AELF = 100000000;
 
   /**
    * Repeat a `pattern` `amount` times

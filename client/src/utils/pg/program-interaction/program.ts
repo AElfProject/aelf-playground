@@ -1,4 +1,4 @@
-import { AnchorProvider, Program } from "@coral-xyz/anchor";
+import { Program } from "@coral-xyz/anchor";
 
 import { PgCommon } from "../common";
 import { PgConnection } from "../connection";
@@ -17,7 +17,7 @@ export const getAnchorProgram = (params?: {
   programId?: typeof PgProgramInfo["pk"];
   idl?: typeof PgProgramInfo["idl"];
 }) => {
-  const { connection, wallet, programId, idl } = PgCommon.setDefault(params, {
+  const { wallet, programId, idl } = PgCommon.setDefault(params, {
     connection: PgConnection.current,
     wallet: PgWallet.current,
     programId: PgProgramInfo.pk,
@@ -28,10 +28,11 @@ export const getAnchorProgram = (params?: {
   if (!programId) throw new Error("Program ID not found");
   if (!idl) throw new Error("Anchor IDL not found");
 
-  const provider = new AnchorProvider(
-    connection,
-    wallet,
-    AnchorProvider.defaultOptions()
-  );
+  // const provider = new AnchorProvider(
+  //   connection,
+  //   wallet,
+  //   AnchorProvider.defaultOptions()
+  // );
+  const provider = undefined;
   return new Program(idl, programId, provider);
 };

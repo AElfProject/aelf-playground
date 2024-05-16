@@ -60,7 +60,7 @@ const SendExpanded = () => {
         const ix = SystemProgram.transfer({
           fromPubkey: PgWallet.current!.publicKey,
           toPubkey: new PublicKey(recipient),
-          lamports: PgCommon.solToLamports(parseFloat(amount)),
+          lamports: PgCommon.elfToSmallestUnit(parseFloat(amount)),
         });
         const tx = new Transaction().add(ix);
         const txHash = await PgTx.send(tx);

@@ -54,12 +54,7 @@ const AELF_EXPLORER = createBlockExplorer({
   name: "AElf Explorer",
   url: "https://explorer-test-side02.aelf.io",
   getClusterParam: () => {
-    switch (PgConnection.cluster) {
-      case "testnet":
-        return "?cluster=testnet";
-      case "custom":
-        return "?cluster=custom&customUrl=";
-    }
+    return "";
   },
 });
 

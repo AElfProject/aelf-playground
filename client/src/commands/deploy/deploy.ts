@@ -134,7 +134,7 @@ const processDeploy = async () => {
   const wallet = PgWallet.current!;
   const [programExists, userBalance] = await Promise.all([
     connection.getAccountInfo(programPk),
-    connection.getBalance(wallet.publicKey),
+    connection.getBalance(wallet.wallet.address),
   ]);
 
   if (!programExists) {
@@ -142,11 +142,11 @@ const processDeploy = async () => {
     const neededBalance = 3 * bufferBalance;
     if (userBalance < neededBalance) {
       const errMsg = `Initial deployment costs ${PgTerminal.bold(
-        PgCommon.lamportsToSol(neededBalance).toFixed(2)
+        PgCommon.smallestUnitToElf(neededBalance).toFixed(2)
       )} SOL but you have ${PgTerminal.bold(
-        PgCommon.lamportsToSol(userBalance).toFixed(2)
+        PgCommon.smallestUnitToElf(userBalance).toFixed(2)
       )} SOL. ${PgTerminal.bold(
-        PgCommon.lamportsToSol(bufferBalance).toFixed(2)
+        PgCommon.smallestUnitToElf(bufferBalance).toFixed(2)
       )} SOL will be refunded at the end.`;
 
       const airdropAmount = PgCommon.getAirdropAmount(connection.rpcEndpoint);
@@ -165,11 +165,11 @@ const processDeploy = async () => {
     // Upgrade
     if (userBalance < bufferBalance) {
       const errMsg = `Upgrading costs ${PgTerminal.bold(
-        PgCommon.lamportsToSol(bufferBalance).toFixed(2)
+        PgCommon.smallestUnitToElf(bufferBalance).toFixed(2)
       )} SOL but you have ${PgTerminal.bold(
-        PgCommon.lamportsToSol(userBalance).toFixed(2)
+        PgCommon.smallestUnitToElf(userBalance).toFixed(2)
       )} SOL. ${PgTerminal.bold(
-        PgCommon.lamportsToSol(bufferBalance).toFixed(2)
+        PgCommon.smallestUnitToElf(bufferBalance).toFixed(2)
       )} SOL will be refunded at the end.`;
 
       const airdropAmount = PgCommon.getAirdropAmount(connection.rpcEndpoint);

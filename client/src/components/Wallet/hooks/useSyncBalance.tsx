@@ -16,13 +16,13 @@ export const useSyncBalance = () => {
 
     // Listen for balance changes
     const id = connection.onAccountChange(wallet.publicKey, (acc) => {
-      PgWallet.balance = PgCommon.lamportsToSol(acc.lamports);
+      PgWallet.balance = PgCommon.smallestUnitToElf(acc.lamports);
     });
 
     const fetchBalance = async () => {
       try {
-        const lamports = await connection.getBalance(wallet.publicKey);
-        PgWallet.balance = PgCommon.lamportsToSol(lamports);
+        const lamports = await connection.getBalance(wallet.wallet.address);
+        PgWallet.balance = PgCommon.smallestUnitToElf(lamports);
       } catch (e: any) {
         console.log("Couldn't fetch balance:", e.message);
         PgWallet.balance = null;
