@@ -9,7 +9,7 @@ export const Address = () => {
   const blockExplorer = useBlockExplorer();
   const { walletPkStr } = useWallet();
 
-  if (!walletPkStr) return null;
+  if (!walletPkStr || !blockExplorer) return null;
 
   return (
     <>
