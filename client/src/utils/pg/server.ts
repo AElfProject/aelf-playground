@@ -1,5 +1,4 @@
 import type { Idl } from "@coral-xyz/anchor";
-
 import type { TupleFiles } from "./explorer";
 
 /** Rust `Option` type */
@@ -103,7 +102,7 @@ export class PgServer {
   }
 
   /** Default playground server URL */
-  private static readonly _DEFAULT_SERVER_URL = "https://api.solpg.io";
+  private static readonly _DEFAULT_SERVER_URL = "/api";
 
   /** Server URL that is customizable from environment variables */
   private static readonly _SERVER_URL =
