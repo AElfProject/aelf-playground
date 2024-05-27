@@ -8,9 +8,9 @@ export interface ResourceProps {
 
 export const RESOURCES: ResourceProps[] = [
   {
-    title: "Cookbook",
+    title: "Learn",
     text: "Detailed explanations and guides for building applications on AElf.",
-    url: "https://solanacookbook.com/",
-    src: "https://solanacookbook.com/solana_cookbook_darkmode.svg",
+    url: "https://learn.aelf.dev/",
+    src: "/icons/platforms/aelf.png",
   },
 ];
