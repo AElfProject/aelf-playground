@@ -49,7 +49,6 @@ export class PgTerminal {
   /** Welcome text */
   static readonly DEFAULT_TEXT = [
     `Welcome to ${PgTerminal.bold(PROJECT_NAME)}.`,
-    `Popular crates for AElf development are available to use.`,
     `Type ${PgTerminal.bold("help")} to see all commands.\n`,
   ].join("\n\n");
 
