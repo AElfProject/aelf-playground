@@ -23,8 +23,15 @@ interface TokenContract extends Contract {
   };
 }
 
+interface GenesisContract extends Contract {
+  GetContractAddressByName: {
+    call: (params: string) => Promise<string>;
+  };
+}
+
 export class ConnectionAElf {
   endpoint;
+  genesisContract: GenesisContract | undefined;
   tokenContract: TokenContract | undefined;
 
   constructor(endpoint: string = "https://tdvw-test-node.aelf.io") {
@@ -40,18 +47,28 @@ export class ConnectionAElf {
       // get genesis contract address
       const GenesisContractAddress = chainStatus.GenesisContractAddress;
       // get genesis contract instance
-      const zeroContract = await aelf.chain.contractAt(
+      this.genesisContract = await aelf.chain.contractAt(
         GenesisContractAddress,
         newWallet
       );
+
+      if (!this.genesisContract)
+        throw new Error("Error initializing Genesis Contract.");
+
       // Get contract address by the read only method `GetContractAddressByName` of genesis contract
-      tokenContractAddress = await zeroContract.GetContractAddressByName.call(
-        AElf.utils.sha256(tokenContractName)
-      );
+      tokenContractAddress =
+        await this.genesisContract.GetContractAddressByName.call(
+          AElf.utils.sha256(tokenContractName)
+        );
       this.tokenContract = (await aelf.chain.contractAt(
         tokenContractAddress,
         newWallet
       )) as TokenContract;
+
+      if (!this.tokenContract)
+        throw new Error("Error initializing Token Contract.");
+
+      console.log("ConnectionAElf initialized.");
     })();
   }
 
