@@ -9,30 +9,31 @@ import ProgramID from "./ProgramID";
 
 /** All program settings */
 const PROGRAM_SETTINGS: ProgramSettingProps[] = [
-  {
-    title: "Program ID",
-    description:
-      "Import/export program keypair or input a public key for the program.",
-    element: <ProgramID />,
-    isOpen: true,
-  },
+  // {
+  //   title: "Program ID",
+  //   description:
+  //     "Import/export program keypair or input a public key for the program.",
+  //   element: <ProgramID />,
+  //   isOpen: true,
+  // },
   {
     title: "Program binary",
     description: "Import your program and deploy without failure.",
     element: <ProgramBinary />,
+    isOpen: true,
   },
   // TODO: Hide it if it's a Native program
-  {
-    title: "Build flags",
-    description: "Anchor build flags.",
-    element: <BuildFlags />,
-  },
+  // {
+  //   title: "Build flags",
+  //   description: "Anchor build flags.",
+  //   element: <BuildFlags />,
+  // },
   // TODO: Hide it if it's a Native program
-  {
-    title: "IDL",
-    description: "Anchor IDL interactions.",
-    element: <IDL />,
-  },
+  // {
+  //   title: "IDL",
+  //   description: "Anchor IDL interactions.",
+  //   element: <IDL />,
+  // },
 ];
 
 const ProgramSettings = () => (

@@ -27,16 +27,28 @@ interface GenesisContract extends Contract {
   GetContractAddressByName: {
     call: (params: string) => Promise<string>;
   };
+  DeployUserSmartContract: (params: {
+    category: 0;
+    code: Buffer;
+  }) => Promise<{ TransactionId: string }>;
+}
+
+interface AElfChain {
+  chain: {
+    getTxResult: (txId: string) => Promise<{}>;
+  };
 }
 
 export class ConnectionAElf {
   endpoint;
   genesisContract: GenesisContract | undefined;
   tokenContract: TokenContract | undefined;
+  aelf: AElfChain;
 
   constructor(endpoint: string = "https://tdvw-test-node.aelf.io") {
     this.endpoint = endpoint;
     const aelf = new AElf(new AElf.providers.HttpProvider(endpoint));
+    this.aelf = aelf;
     const newWallet = AElf.wallet.createNewWallet();
 
     const tokenContractName = "AElf.ContractNames.Token";
@@ -154,4 +166,39 @@ export class ConnectionAElf {
   async getMinimumBalanceForRentExemption(size: number) {
     return 0;
   }
+
+  async deploy(code: Buffer) {
+    const res = await this.genesisContract?.DeployUserSmartContract({
+      category: 0,
+      code,
+    });
+
+    if (res) {
+      try {
+        const txResult = await this.aelf.chain.getTxResult(res.TransactionId);
+        console.log(txResult);
+      } catch (err: unknown) {
+        throw err as ErrorInterface;
+      }
+    }
+
+    return null;
+  }
+}
+
+export interface ErrorInterface {
+  TransactionId: string;
+  Status: string;
+  Logs: [];
+  Bloom: null;
+  BlockNumber: 0;
+  BlockHash: null;
+  Transaction: null;
+  ReturnValue: "";
+  Error: string;
+  TransactionSize: 0;
+}
+
+export function convertAElfErrorMessages(err: ErrorInterface) {
+  return `\nTransaction ID: ${err.TransactionId}\nError: ${err.Error}`;
 }

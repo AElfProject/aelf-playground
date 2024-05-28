@@ -66,6 +66,7 @@ const buildContract = async (files: TupleFiles) => {
   PgProgramInfo.update({
     uuid: resp.uuid ?? undefined,
     idl: resp.idl,
+    dll: resp.dll,
   });
 
   return { stderr: resp.stderr };

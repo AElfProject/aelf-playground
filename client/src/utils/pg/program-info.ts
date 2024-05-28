@@ -31,6 +31,8 @@ type ProgramInfo = Nullable<{
     buffer: Buffer;
     fileName: string;
   };
+  /** AElf dll patched */
+  dll: string;
 }>;
 
 /** Serialized program info that's used in storage */
@@ -47,6 +49,7 @@ const defaultState: ProgramInfo = {
   customPk: null,
   idl: null,
   importedProgram: null,
+  dll: null,
 };
 
 const storage = {
@@ -73,6 +76,7 @@ const storage = {
         ? new PublicKey(serializedState.customPk)
         : null,
       importedProgram: defaultState.importedProgram,
+      dll: defaultState.dll,
     };
   },
 
@@ -147,26 +151,7 @@ class _PgProgramInfo {
    * @returns program's authority and whether the program is upgradable
    */
   static async fetch(programId: PublicKey | null = PgProgramInfo.pk) {
-    if (!programId) throw new Error("Program id doesn't exist");
-
-    const conn = PgConnection.current;
-    if (!PgConnection.isReady()) throw new Error("Connection is not ready");
-
-    const programAccountInfo = await conn.getAccountInfo(programId);
-    const deployed = !!programAccountInfo;
-    if (!programAccountInfo) return { deployed, upgradable: true };
-
-    const programDataPkBuffer = programAccountInfo.data.slice(4);
-    const programDataPk = new PublicKey(programDataPkBuffer);
-    const programDataAccountInfo = await conn.getAccountInfo(programDataPk);
-
-    // Check if program authority exists
-    const authorityExists = programDataAccountInfo?.data.at(12);
-    if (!authorityExists) return { deployed, upgradable: false };
-
-    const upgradeAuthorityPkBuffer = programDataAccountInfo?.data.slice(13, 45);
-    const upgradeAuthorityPk = new PublicKey(upgradeAuthorityPkBuffer!);
-    return { deployed, authority: upgradeAuthorityPk, upgradable: true };
+    return { deployed: false, upgradable: false };
   }
 
   /**

@@ -10,6 +10,7 @@ export const handlers = [
       uuid: "056898f7-ada8-48b8-b379-e6faccf1669d",
       /** Anchor IDL */
       idl: null,
+      dll: "abc",
     });
   }),
 ];

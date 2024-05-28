@@ -46,6 +46,8 @@ export class PgServer {
       uuid: string | null;
       /** Anchor IDL */
       idl: Idl | null;
+      /** AElf dll patched */
+      dll: string | null;
     }
 
     const response = await this._send("/build", {

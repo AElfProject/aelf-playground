@@ -14,6 +14,10 @@ import {
 } from "../../utils/pg";
 import { createCmd } from "../create";
 import { isPgConnected } from "../validation";
+import {
+  ErrorInterface,
+  convertAElfErrorMessages,
+} from "../../utils/pg/connection-aelf";
 
 export const deploy = createCmd({
   name: "deploy",
@@ -31,7 +35,7 @@ export const deploy = createCmd({
     let msg;
     try {
       const startTime = performance.now();
-      const { txHash, closeBuffer } = await processDeploy();
+      const { txHash } = await processDeploy();
       if (txHash) {
         const timePassed = (performance.now() - startTime) / 1000;
         PgTx.notify(txHash);
@@ -39,23 +43,6 @@ export const deploy = createCmd({
         msg = `${PgTerminal.success(
           "Deployment successful."
         )} Completed in ${PgCommon.secondsToTime(timePassed)}.`;
-      } else if (closeBuffer) {
-        const term = await PgTerminal.get();
-        const shouldCloseBufferAccount = await term.waitForUserInput(
-          PgTerminal.warning("Cancelled deployment.") +
-            " Would you like to close the buffer account and reclaim SOL?",
-          { confirm: true, default: "yes" }
-        );
-        if (shouldCloseBufferAccount) {
-          await closeBuffer();
-          PgTerminal.log(PgTerminal.success("Reclaim successful."));
-        } else {
-          PgTerminal.log(
-            `${PgTerminal.error(
-              "Reclaim rejected."
-            )} Run \`solana program close --buffers\` to close unused buffer accounts and reclaim SOL.`
-          );
-        }
       }
     } catch (e: any) {
       const convertedError = PgTerminal.convertErrorMessage(e.message);
@@ -72,27 +59,8 @@ export const deploy = createCmd({
 
 /** Check whether the state is valid for deployment. */
 async function checkDeploy() {
-  if (!PgProgramInfo.onChain) {
-    throw new Error(
-      `Could not fetch on-chain data. Try using a different RPC provider with '${PgTerminal.bold(
-        "solana config set -u <RPC_URL>"
-      )}' command.`
-    );
-  }
-
-  if (!PgProgramInfo.onChain.upgradable) {
-    throw new Error(PgTerminal.warning("The program is not upgradable."));
-  }
-
-  const authority = PgProgramInfo.onChain.authority;
-  const hasAuthority =
-    !authority || authority.equals(PgWallet.current!.publicKey);
-
-  if (!hasAuthority) {
-    throw new Error(`You don't have the authority to upgrade this program.
-Program ID: ${PgProgramInfo.pk}
-Program authority: ${authority}
-Your address: ${PgWallet.current!.publicKey}`);
+  if (!PgProgramInfo.dll) {
+    throw new Error(PgTerminal.warning("The program is not built."));
   }
 }
 
@@ -121,233 +89,24 @@ const processDeploy = async () => {
   // Get connection
   const connection = PgConnection.current;
 
-  // Create buffer
-  const bufferKp = Keypair.generate();
-  const programLen = programBuffer.length;
-  const bufferSize = BpfLoaderUpgradeable.getBufferAccountSize(programLen);
-  const bufferBalance = await connection.getMinimumBalanceForRentExemption(
-    bufferSize
-  );
+  try {
+    const codeHash = await connection.deploy(Buffer.from([]));
+    console.log(codeHash);
+  } catch (err) {
+    let error: ErrorInterface = err as ErrorInterface;
 
-  // Decide whether it's an initial deployment or an upgrade and calculate
-  // how much SOL user needs before creating the buffer.
-  const wallet = PgWallet.current!;
-  const [programExists, userBalance] = await Promise.all([
-    connection.getAccountInfo(programPk),
-    connection.getBalance(wallet.wallet.address),
-  ]);
-
-  if (!programExists) {
-    // Initial deploy
-    const neededBalance = 3 * bufferBalance;
-    if (userBalance < neededBalance) {
-      const errMsg = `Initial deployment costs ${PgTerminal.bold(
-        PgCommon.smallestUnitToElf(neededBalance).toFixed(2)
-      )} SOL but you have ${PgTerminal.bold(
-        PgCommon.smallestUnitToElf(userBalance).toFixed(2)
-      )} SOL. ${PgTerminal.bold(
-        PgCommon.smallestUnitToElf(bufferBalance).toFixed(2)
-      )} SOL will be refunded at the end.`;
-
-      const airdropAmount = PgCommon.getAirdropAmount(connection.rpcEndpoint);
-      if (airdropAmount !== null) {
-        throw new Error(
-          errMsg +
-            `\nYou can use '${PgTerminal.bold(
-              `solana airdrop ${airdropAmount}`
-            )}' to airdrop some SOL.`
-        );
-      }
-
-      throw new Error(errMsg);
-    }
-  } else {
-    // Upgrade
-    if (userBalance < bufferBalance) {
-      const errMsg = `Upgrading costs ${PgTerminal.bold(
-        PgCommon.smallestUnitToElf(bufferBalance).toFixed(2)
-      )} SOL but you have ${PgTerminal.bold(
-        PgCommon.smallestUnitToElf(userBalance).toFixed(2)
-      )} SOL. ${PgTerminal.bold(
-        PgCommon.smallestUnitToElf(bufferBalance).toFixed(2)
-      )} SOL will be refunded at the end.`;
-
-      const airdropAmount = PgCommon.getAirdropAmount(connection.rpcEndpoint);
-      if (airdropAmount !== null) {
-        throw new Error(
-          errMsg +
-            `\nYou can use '${PgTerminal.bold(
-              `solana airdrop ${airdropAmount}`
-            )}' to airdrop some SOL.`
-        );
-      }
-
-      throw new Error(errMsg);
-    }
+    throw new Error(convertAElfErrorMessages(error));
   }
-
-  // Retry until it's successful or exceeds max tries
-  let sleepAmount = 1000;
-  for (let i = 0; i < MAX_RETRIES; i++) {
-    try {
-      if (i !== 0) {
-        const bufferAcc = await connection.getAccountInfo(bufferKp.publicKey);
-        if (bufferAcc) break;
-      }
-
-      await BpfLoaderUpgradeable.createBuffer(
-        bufferKp,
-        bufferBalance,
-        programLen,
-        { wallet }
-      );
-    } catch (e: any) {
-      console.log("Create buffer error:", e.message);
-      if (i === MAX_RETRIES - 1) {
-        throw new Error(
-          `Exceeded maximum amount of retries(${PgTerminal.bold(
-            MAX_RETRIES.toString()
-          )}) to create the program buffer account. \
-Please change RPC endpoint from the settings.
-Reason: ${e.message}`
-        );
-      }
-
-      await PgCommon.sleep(sleepAmount);
-      sleepAmount *= SLEEP_MULTIPLIER;
-    }
-  }
-
-  console.log("Buffer pk:", bufferKp.publicKey.toBase58());
-  const closeBuffer = async () => {
-    await BpfLoaderUpgradeable.closeBuffer(bufferKp.publicKey, { wallet });
-  };
-
-  // Load buffer
-  const loadBufferResult = await loadBufferWithControl(
-    bufferKp.publicKey,
-    programBuffer,
-    {
-      connection,
-      wallet,
-      onWrite: (offset) => PgTerminal.setProgress((offset / programLen) * 100),
-      onMissing: (missingCount) => {
-        PgTerminal.log(
-          `Warning: ${PgTerminal.bold(
-            missingCount.toString()
-          )} ${PgCommon.makePlural(
-            "transaction",
-            missingCount
-          )} not confirmed, retrying...`
-        );
-      },
-    }
-  );
-  if (loadBufferResult.cancelled) return { closeBuffer };
 
   let txHash: string | undefined;
+
   let errorMsg =
     "Please check the browser console. If the problem persists, you can report the issue in " +
     GITHUB_URL +
     "/issues";
-  sleepAmount = 1000;
-
-  // Retry until it's successful or exceeds max tries
-  for (let i = 0; i < MAX_RETRIES; i++) {
-    try {
-      if (!programExists) {
-        // First deploy needs keypair
-        const programKp = PgProgramInfo.kp;
-        if (!programKp) {
-          errorMsg =
-            "Initial deployment needs a keypair but you've only provided a public key.";
-
-          break;
-        }
-
-        // Check whether customPk and programPk matches
-        if (!programKp.publicKey.equals(programPk)) {
-          errorMsg = [
-            "Entered program id doesn't match program id derived from program's keypair. Initial deployment can only be done from a keypair.",
-            "You can fix this in 3 different ways:",
-            `1. Remove the custom program id from ${PgTerminal.bold(
-              "Program Credentials"
-            )}`,
-            "2. Import the program keypair for the current program id",
-            "3. Create a new program keypair",
-          ].join("\n");
-
-          break;
-        }
-
-        const programSize = BpfLoaderUpgradeable.getBufferAccountSize(
-          BpfLoaderUpgradeable.BUFFER_PROGRAM_SIZE
-        );
-        const programBalance =
-          await connection.getMinimumBalanceForRentExemption(programSize);
-
-        txHash = await BpfLoaderUpgradeable.deployProgram(
-          bufferKp.publicKey,
-          programKp,
-          programBalance,
-          programLen * 2,
-          { wallet }
-        );
-      } else {
-        // Upgrade
-        txHash = await BpfLoaderUpgradeable.upgradeProgram(
-          programPk,
-          bufferKp.publicKey,
-          wallet.publicKey,
-          { wallet }
-        );
-      }
-
-      console.log("Deploy/upgrade tx hash:", txHash);
-
-      const result = await PgTx.confirm(txHash);
-      if (!result?.err) {
-        // Also check whether the buffer account was because `PgTx.confirm` can
-        // be unreliable
-        const bufferAcc = await connection.getAccountInfo(bufferKp.publicKey);
-        if (!bufferAcc) break;
-      }
-    } catch (e: any) {
-      console.log("Deploy/upgrade error:", e.message);
-
-      if (e.message.endsWith("0x0")) {
-        await closeBuffer();
-
-        throw new Error("Incorrect program id.");
-      }
-      if (e.message.endsWith("0x1")) {
-        // Not enough balance
-        await closeBuffer();
-
-        throw new Error(
-          "Make sure you have enough SOL to complete the deployment."
-        );
-      }
-
-      await PgCommon.sleep(sleepAmount);
-      sleepAmount *= SLEEP_MULTIPLIER;
-    }
-
-    if (i === MAX_RETRIES - 1) {
-      await closeBuffer();
-
-      throw new Error(
-        `Failed to deploy with ${PgTerminal.bold(
-          MAX_RETRIES.toString()
-        )} retries.`
-      );
-    }
-  }
 
   // Most likely the user doesn't have the upgrade authority
   if (!txHash) {
-    await closeBuffer();
-
     throw new Error(errorMsg);
   }
 

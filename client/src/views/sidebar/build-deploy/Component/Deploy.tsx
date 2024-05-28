@@ -23,10 +23,6 @@ const Deploy = () => {
 
   const { deployed, error, programInfo } = useProgramInfo();
   const { wallet } = useWallet();
-  const upgradable = programInfo.onChain?.upgradable;
-  const hasAuthority = wallet
-    ? programInfo.onChain?.authority?.equals(wallet.publicKey)
-    : false;
   const hasProgramKp = !!programInfo.kp;
   const hasUuid = !!programInfo.uuid;
   const importedProgram = programInfo.importedProgram;
@@ -128,56 +124,18 @@ const Deploy = () => {
       </Wrapper>
     );
 
-  if (!hasUuid && !isImportedProgram)
+  if (!programInfo.dll)
     return (
       <Wrapper>
         <Text>
           <div>
-            Build the program first or import a program from
-            <Bold> Program binary</Bold>.
+            Build the program first.
+            {/* or import a program from
+            <Bold> Program binary</Bold>. */}
           </div>
         </Text>
       </Wrapper>
     );
-
-  if (upgradable === false)
-    return (
-      <Wrapper>
-        <Text kind="warning">The program is not upgradable.</Text>
-      </Wrapper>
-    );
-
-  if (hasAuthority === false)
-    return (
-      <Wrapper>
-        <Text kind="warning">
-          You don't have the authority to upgrade this program.
-        </Text>
-      </Wrapper>
-    );
-
-  // Custom(uploaded) program deploy
-  if (isImportedProgram) {
-    const text =
-      deployState === "cancelled"
-        ? `Cancelling the ${deployed ? "upgrade" : "deployment"} of ${
-            importedProgram.fileName
-          }...`
-        : deployState === "loading"
-        ? `${deployed ? "Upgrading" : "Deploying"} ${
-            importedProgram.fileName
-          }...`
-        : ` Ready to ${deployed ? "upgrade" : "deploy"} ${
-            importedProgram.fileName
-          }`;
-
-    return (
-      <Wrapper>
-        <Text>{text}</Text>
-        <Button {...deployButtonProps}>{deployButtonText}</Button>
-      </Wrapper>
-    );
-  }
 
   return (
     <Wrapper>
