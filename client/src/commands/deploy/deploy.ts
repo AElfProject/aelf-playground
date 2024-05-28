@@ -89,9 +89,11 @@ const processDeploy = async () => {
   // Get connection
   const connection = PgConnection.current;
 
+  if (!PgProgramInfo.dll) throw new Error("Program is not built.");
+
   try {
-    const codeHash = await connection.deploy(Buffer.from([]));
-    console.log(codeHash);
+    const codeHash = await connection.deploy(PgProgramInfo.dll);
+    PgTerminal.log("CodeHash: " + codeHash);
   } catch (err) {
     let error: ErrorInterface = err as ErrorInterface;
 

@@ -29,13 +29,14 @@ interface GenesisContract extends Contract {
   };
   DeployUserSmartContract: (params: {
     category: 0;
-    code: Buffer;
+    code: string;
   }) => Promise<{ TransactionId: string }>;
 }
 
 interface AElfChain {
   chain: {
-    getTxResult: (txId: string) => Promise<{}>;
+    getTxResult: (txId: string) => Promise<TransactionResult>;
+    contractAt: <T>(address: string, wallet: any) => Promise<T>;
   };
 }
 
@@ -43,49 +44,68 @@ export class ConnectionAElf {
   endpoint;
   genesisContract: GenesisContract | undefined;
   tokenContract: TokenContract | undefined;
-  aelf: AElfChain;
 
-  constructor(endpoint: string = "https://tdvw-test-node.aelf.io") {
+  constructor(
+    endpoint: string = "https://tdvw-test-node.aelf.io",
+    newWallet: any = AElf.wallet.createNewWallet()
+  ) {
     this.endpoint = endpoint;
-    const aelf = new AElf(new AElf.providers.HttpProvider(endpoint));
-    this.aelf = aelf;
-    const newWallet = AElf.wallet.createNewWallet();
+    this.init(endpoint, newWallet);
+  }
 
-    const tokenContractName = "AElf.ContractNames.Token";
-    let tokenContractAddress;
-    (async () => {
-      // get chain status
-      const chainStatus = await aelf.chain.getChainStatus();
-      // get genesis contract address
-      const GenesisContractAddress = chainStatus.GenesisContractAddress;
-      // get genesis contract instance
-      this.genesisContract = await aelf.chain.contractAt(
-        GenesisContractAddress,
-        newWallet
-      );
+  get aelf(): AElfChain {
+    return new AElf(new AElf.providers.HttpProvider(this.endpoint));
+  }
 
-      if (!this.genesisContract)
-        throw new Error("Error initializing Genesis Contract.");
+  async init(
+    endpoint: string = "https://tdvw-test-node.aelf.io",
+    newWallet: any = AElf.wallet.createNewWallet()
+  ) {
+    this.endpoint = endpoint;
 
-      // Get contract address by the read only method `GetContractAddressByName` of genesis contract
-      tokenContractAddress =
-        await this.genesisContract.GetContractAddressByName.call(
-          AElf.utils.sha256(tokenContractName)
-        );
-      this.tokenContract = (await aelf.chain.contractAt(
-        tokenContractAddress,
-        newWallet
-      )) as TokenContract;
+    // get genesis contract address
+    const GenesisContractAddress =
+      await ConnectionAElf.getGenesisContractAddress(endpoint);
+    // get genesis contract instance
+    this.genesisContract = await this.aelf.chain.contractAt(
+      GenesisContractAddress,
+      newWallet
+    );
 
-      if (!this.tokenContract)
-        throw new Error("Error initializing Token Contract.");
+    if (!this.genesisContract)
+      throw new Error("Error initializing Genesis Contract.");
 
-      console.log("ConnectionAElf initialized.");
-    })();
+    // Get contract address by the read only method `GetContractAddressByName` of genesis contract
+    const tokenContractAddress = await ConnectionAElf.getTokenContractAddress(
+      this.genesisContract
+    );
+
+    this.tokenContract = (await this.aelf.chain.contractAt(
+      tokenContractAddress,
+      newWallet
+    )) as TokenContract;
+
+    if (!this.tokenContract)
+      throw new Error("Error initializing Token Contract.");
+
+    console.log("ConnectionAElf initialized.");
   }
 
   get rpcEndpoint() {
     return this.endpoint || "https://tdvw-test-node.aelf.io";
+  }
+
+  static async getGenesisContractAddress(endpoint: string) {
+    const aelf = new AElf(new AElf.providers.HttpProvider(endpoint));
+    const chainStatus = await aelf.chain.getChainStatus();
+    return chainStatus.GenesisContractAddress;
+  }
+
+  static async getTokenContractAddress(genesisContract: GenesisContract) {
+    const tokenContractName = "AElf.ContractNames.Token";
+    return await genesisContract.GetContractAddressByName.call(
+      AElf.utils.sha256(tokenContractName)
+    );
   }
 
   async confirmTransaction(txHash: string, commitment?: string) {
@@ -145,6 +165,10 @@ export class ConnectionAElf {
     return 0;
   }
 
+  async onWalletChange(wallet: any) {
+    await this.init(this.endpoint, wallet);
+  }
+
   async requestAirdrop(address: string) {
     const res = await fetch(
       `https://faucet.aelf.dev/api/claim?walletAddress=${address}`,
@@ -167,7 +191,7 @@ export class ConnectionAElf {
     return 0;
   }
 
-  async deploy(code: Buffer) {
+  async deploy(code: string) {
     const res = await this.genesisContract?.DeployUserSmartContract({
       category: 0,
       code,
@@ -197,6 +221,27 @@ export interface ErrorInterface {
   ReturnValue: "";
   Error: string;
   TransactionSize: 0;
+}
+
+export interface TransactionResult {
+  TransactionId: string;
+  Status: "PENDING" | "MINED";
+  Logs: [];
+  Bloom: string;
+  BlockNumber: number;
+  BlockHash: string | null;
+  Transaction: {
+    From: string;
+    To: string;
+    RefBlockNumber: number;
+    RefBlockPrefix: string;
+    MethodName: string;
+    Params: string;
+    Signature: string;
+  };
+  ReturnValue: string;
+  Error: string | null;
+  TransactionSize: number;
 }
 
 export function convertAElfErrorMessages(err: ErrorInterface) {

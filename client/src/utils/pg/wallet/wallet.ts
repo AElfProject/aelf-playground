@@ -20,6 +20,7 @@ import type {
 } from "./types";
 // @ts-ignore
 import AElf from "aelf-sdk";
+import { PgConnection } from "../connection";
 
 const defaultState: Wallet = {
   state: "setup",
@@ -95,7 +96,11 @@ const derive = () => ({
             return null;
           }
 
-          return PgWallet.createWallet(currentAccount);
+          const newWallet = PgWallet.createWallet(currentAccount);
+
+          await PgConnection.current.onWalletChange(newWallet.wallet);
+
+          return newWallet;
         }
 
         case "disconnected":
