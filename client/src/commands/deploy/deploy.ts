@@ -1,7 +1,4 @@
-import { Keypair } from "@solana/web3.js";
-
 import { GITHUB_URL } from "../../constants";
-import { BpfLoaderUpgradeable } from "../../utils/bpf-upgradeable-browser";
 import {
   PgCommon,
   PgConnection,
@@ -10,7 +7,6 @@ import {
   PgServer,
   PgTerminal,
   PgTx,
-  PgWallet,
 } from "../../utils/pg";
 import { createCmd } from "../create";
 import { isPgConnected } from "../validation";
@@ -64,12 +60,6 @@ async function checkDeploy() {
   }
 }
 
-/** Maximum amount of transaction retries */
-const MAX_RETRIES = 5;
-
-/** Sleep amount multiplier each time a transaction fails */
-const SLEEP_MULTIPLIER = 1.8;
-
 /**
  * Deploy the current program.
  *
@@ -114,63 +104,4 @@ const processDeploy = async () => {
   }
 
   return { txHash };
-};
-
-/** Load buffer with the ability to pause, resume and cancel on demand. */
-const loadBufferWithControl = (
-  ...args: Parameters<typeof BpfLoaderUpgradeable["loadBuffer"]>
-) => {
-  return new Promise<
-    | {
-        cancelled: true;
-        success?: never;
-      }
-    | {
-        cancelled?: never;
-        success: true;
-      }
-  >(async (res) => {
-    const abortController = new AbortController();
-    args[2] = { ...args[2], abortController };
-
-    const term = await PgTerminal.get();
-    const handle = async () => {
-      if (abortController.signal.aborted) {
-        await term.executeFromStr("yes");
-      } else {
-        abortController.abort();
-        const shouldContinue = await term.waitForUserInput(
-          "Continue deployment?",
-          { confirm: true, default: "yes" }
-        );
-        dispose();
-
-        if (shouldContinue) {
-          PgGlobal.deployState = "loading";
-          loadBufferWithControl(...args).then(res);
-        } else {
-          PgGlobal.deployState = "cancelled";
-          res({ cancelled: true });
-        }
-      }
-    };
-
-    let prevState = PgGlobal.deployState;
-    const { dispose } = PgGlobal.onDidChangeDeployState((state) => {
-      if (
-        prevState !== state &&
-        (prevState === "paused" || state === "paused")
-      ) {
-        handle();
-      }
-      prevState = state;
-    });
-
-    await BpfLoaderUpgradeable.loadBuffer(...args);
-
-    if (!abortController.signal.aborted) {
-      dispose();
-      res({ success: true });
-    }
-  });
 };
