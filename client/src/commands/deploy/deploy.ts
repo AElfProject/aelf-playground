@@ -91,16 +91,17 @@ const processDeploy = async () => {
 
   if (!PgProgramInfo.dll) throw new Error("Program is not built.");
 
+  let txHash: string | undefined;
+
   try {
-    const codeHash = await connection.deploy(PgProgramInfo.dll);
-    PgTerminal.log("CodeHash: " + codeHash);
+    const result = await connection.deploy(PgProgramInfo.dll);
+    PgTerminal.log("Transaction ID: " + result?.TransactionId);
+    txHash = result?.TransactionId;
   } catch (err) {
     let error: ErrorInterface = err as ErrorInterface;
 
     throw new Error(convertAElfErrorMessages(error));
   }
-
-  let txHash: string | undefined;
 
   let errorMsg =
     "Please check the browser console. If the problem persists, you can report the issue in " +

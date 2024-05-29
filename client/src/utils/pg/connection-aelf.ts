@@ -200,7 +200,8 @@ export class ConnectionAElf {
     if (res) {
       try {
         const txResult = await this.aelf.chain.getTxResult(res.TransactionId);
-        console.log(txResult);
+
+        return txResult;
       } catch (err: unknown) {
         throw err as ErrorInterface;
       }
