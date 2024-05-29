@@ -11,7 +11,7 @@ import {
 import { createCmd } from "../create";
 import { isPgConnected } from "../validation";
 import {
-  ErrorInterface,
+  TransactionError,
   convertAElfErrorMessages,
 } from "../../utils/pg/connection-aelf";
 
@@ -88,9 +88,9 @@ const processDeploy = async () => {
     PgTerminal.log("Transaction ID: " + result?.TransactionId);
     txHash = result?.TransactionId;
   } catch (err) {
-    let error: ErrorInterface = err as ErrorInterface;
-
-    throw new Error(convertAElfErrorMessages(error));
+    if (err instanceof TransactionError) {
+      throw new Error(convertAElfErrorMessages(err.data));
+    }
   }
 
   let errorMsg =

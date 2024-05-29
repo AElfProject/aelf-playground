@@ -203,7 +203,8 @@ export class ConnectionAElf {
 
         return txResult;
       } catch (err: unknown) {
-        throw err as ErrorInterface;
+        const res: TransactionErrorResponse = err as TransactionErrorResponse;
+        throw new TransactionError(res.Error, res);
       }
     }
 
@@ -211,7 +212,7 @@ export class ConnectionAElf {
   }
 }
 
-export interface ErrorInterface {
+interface TransactionErrorResponse {
   TransactionId: string;
   Status: string;
   Logs: [];
@@ -222,6 +223,15 @@ export interface ErrorInterface {
   ReturnValue: "";
   Error: string;
   TransactionSize: 0;
+}
+
+export class TransactionError extends Error {
+  data;
+
+  constructor(message: string, data: TransactionErrorResponse) {
+    super(message);
+    this.data = data;
+  }
 }
 
 export interface TransactionResult {
@@ -245,6 +255,6 @@ export interface TransactionResult {
   TransactionSize: number;
 }
 
-export function convertAElfErrorMessages(err: ErrorInterface) {
+export function convertAElfErrorMessages(err: TransactionErrorResponse) {
   return `\nTransaction ID: ${err.TransactionId}\nError: ${err.Error}`;
 }

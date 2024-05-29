@@ -24,7 +24,6 @@ const Deploy = () => {
   const { deployed, error, programInfo } = useProgramInfo();
   const { wallet } = useWallet();
   const hasProgramKp = !!programInfo.kp;
-  const hasUuid = !!programInfo.uuid;
   const importedProgram = programInfo.importedProgram;
   const isImportedProgram = !!importedProgram?.buffer.length;
 
