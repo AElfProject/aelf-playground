@@ -1,3 +1,3 @@
 # https://docs.netlify.com/routing/redirects/rewrites-proxies/#proxy-to-another-service
-/completion/* https://monaco-csharp-demo.test.aelf.dev/:splat 200
+/completion/* https://monaco-csharp-demo.test.aelf.dev/completion/:splat 200
 /* /index.html 200
