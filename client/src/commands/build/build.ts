@@ -54,22 +54,26 @@ const processBuild = async () => {
 const buildContract = async (files: TupleFiles) => {
   if (!files.length) throw new Error("Couldn't find any files.");
 
-  // TODO: implement build for server.
+  let err = "";
 
-  const resp = await PgServer.build({
-    files,
-    uuid: PgProgramInfo.uuid,
-    flags: PgSettings.build.flags,
-  });
+  try {
+    const resp = await PgServer.build({
+      files,
+      uuid: PgProgramInfo.uuid,
+      flags: PgSettings.build.flags,
+    });
 
-  // Update program info
-  PgProgramInfo.update({
-    uuid: resp.uuid ?? undefined,
-    idl: resp.idl,
-    dll: resp.dll,
-  });
+    // Update program info
+    PgProgramInfo.update({
+      dll: resp,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      err = error.message;
+    }
+  }
 
-  return { stderr: resp.stderr };
+  return { stderr: err };
 };
 
 /**

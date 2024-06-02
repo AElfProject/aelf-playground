@@ -1,5 +1,5 @@
-import type { Idl } from "@coral-xyz/anchor";
 import type { TupleFiles } from "./explorer";
+import { ZipFiles } from "./zip-files";
 
 /** Rust `Option` type */
 type Option<T> = T | null | undefined;
@@ -38,23 +38,8 @@ export class PgServer {
    * @returns the build response
    */
   static async build(req: BuildRequest) {
-    /** `/build` response */
-    interface BuildResponse {
-      /** Build output */
-      stderr: string;
-      /** UUID of the program */
-      uuid: string | null;
-      /** Anchor IDL */
-      idl: Idl | null;
-      /** AElf dll patched */
-      dll: string | null;
-    }
-
-    const response = await this._send("/build", {
-      post: { body: JSON.stringify(req) },
-    });
-
-    return (await response.json()) as BuildResponse;
+    const zip = ZipFiles(req.files);
+    return await this._build(zip);
   }
 
   /**
@@ -104,7 +89,8 @@ export class PgServer {
   }
 
   /** Default playground server URL */
-  private static readonly _DEFAULT_SERVER_URL = "/api";
+  private static readonly _DEFAULT_SERVER_URL =
+    "https://playground.test.aelf.dev";
 
   /** Server URL that is customizable from environment variables */
   private static readonly _SERVER_URL =
@@ -143,5 +129,34 @@ export class PgServer {
     }
 
     return response;
+  }
+
+  /**
+   * Send a build request to the Playground server.
+   *
+   * @throws when the response is not OK with the decoded response
+   * @returns the HTTP response
+   */
+  private static async _build(data: Uint8Array) {
+    const path = "/playground/build";
+
+    const formData = new FormData();
+    formData.append("zip", new Blob([data], { type: "application/zip" }));
+
+    const requestInit: RequestInit = {
+      method: "POST",
+      body: formData,
+      redirect: "follow",
+    };
+
+    const response = await fetch(`${path}`, requestInit);
+    if (!response.ok) {
+      const message = await response.text();
+      throw new Error(message);
+    }
+
+    const blob = await response.blob();
+    const buffer = await blob.arrayBuffer();
+    return Buffer.from(buffer).toString("hex");
   }
 }
