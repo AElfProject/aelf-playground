@@ -141,7 +141,10 @@ export class PgServer {
     const path = "/playground/build";
 
     const formData = new FormData();
-    formData.append("zip", new Blob([data], { type: "application/zip" }));
+    formData.append(
+      "contractFiles",
+      new Blob([data], { type: "application/zip" })
+    );
 
     const requestInit: RequestInit = {
       method: "POST",
