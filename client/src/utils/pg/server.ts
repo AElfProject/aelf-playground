@@ -143,7 +143,8 @@ export class PgServer {
     const formData = new FormData();
     formData.append(
       "contractFiles",
-      new Blob([data], { type: "application/zip" })
+      new Blob([data], { type: "application/zip" }),
+      "playground.zip"
     );
 
     const requestInit: RequestInit = {
