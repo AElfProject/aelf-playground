@@ -1,5 +1,6 @@
 import { GITHUB_URL } from "../../constants";
 import {
+  PgBlockExplorer,
   PgCommon,
   PgConnection,
   PgGlobal,
@@ -20,20 +21,80 @@ export const deploy = createCmd({
   run: async () => {
     PgGlobal.update({ deployState: "loading" });
 
+    let progress = 0.1;
     PgTerminal.log(
       `${PgTerminal.info(
         "Deploying..."
       )} This could take a while depending on the program size and network conditions.`
     );
-    PgTerminal.setProgress(0.1);
+    PgTerminal.setProgress(progress);
 
     let msg;
     try {
       const startTime = performance.now();
       const { txHash } = await processDeploy();
       if (txHash) {
+        let txResult = await PgConnection.current.getTxResult(txHash);
+        let deploymentStatus = txResult.Status;
+
+        while (deploymentStatus === "PENDING") {
+          PgTerminal.log(
+            `${PgTerminal.info(
+              "Checking deployment status..."
+            )} ${deploymentStatus}`,
+            { newLine: true }
+          );
+          await PgCommon.sleep(5000);
+
+          txResult = await PgConnection.current.getTxResult(txHash);
+          deploymentStatus = txResult.Status;
+
+          progress += 0.1;
+          PgTerminal.setProgress(progress);
+        }
+
+        if (deploymentStatus !== "MINED") {
+          throw new Error("Deployment failed.");
+        }
+
+        const proposalId = txResult.deserializedLogs.find(
+          (i) => typeof i.proposalId === "string"
+        )?.proposalId;
+
+        if (!proposalId) {
+          throw new Error("Proposal ID not found.");
+        }
+
+        let info = await PgBlockExplorer.current.getProposalInfo(proposalId);
+
+        if (info.msg !== "success") {
+          throw new Error("Proposal info not found.");
+        }
+
+        let status = info.data.proposal.status,
+          isContractDeployed = info.data.proposal.isContractDeployed;
+
+        while (status !== "expired" && isContractDeployed === false) {
+          PgTerminal.log(
+            `${PgTerminal.info("Checking proposal status...")} ${status}`,
+            { newLine: true }
+          );
+          await PgCommon.sleep(5000);
+
+          info = await PgBlockExplorer.current.getProposalInfo(proposalId);
+          status = info.data.proposal.status;
+          isContractDeployed = info.data.proposal.isContractDeployed;
+
+          progress += 0.1;
+          PgTerminal.setProgress(progress);
+        }
+
+        if (status === "expired" && isContractDeployed === false) {
+          throw new Error("Contract not deployed after proposal expiry.");
+        }
+
         const timePassed = (performance.now() - startTime) / 1000;
-        PgTx.notify(txHash);
+        PgTx.notify(info.data.proposal.contractAddress);
 
         msg = `${PgTerminal.success(
           "Deployment successful."

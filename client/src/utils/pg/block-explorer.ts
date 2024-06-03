@@ -1,5 +1,6 @@
 import { PgConnection } from "./connection";
 import { createDerivable, declareDerivable, derivable } from "./decorators";
+import { ProposalInfo } from "./proposal-info-types";
 import { PgSettings } from "./settings";
 
 interface BlockExplorerImpl {
@@ -35,6 +36,20 @@ interface BlockExplorerImpl {
    * @returns the transaction URL
    */
   getTxUrl?(txHash: string): string;
+  /**
+   * Get proposal URL for the configured explorer.
+   *
+   * @param proposalId proposal ID
+   * @returns the proposal URL
+   */
+  getProposalUrl?(proposalId: string): string;
+  /**
+   * Get proposal Info for the configured explorer.
+   *
+   * @param proposalId proposal ID
+   * @returns the proposal URL
+   */
+  getProposalInfo?(proposalId: string): Promise<ProposalInfo>;
 }
 
 type BlockExplorer = Omit<
@@ -58,6 +73,16 @@ const AELF_EXPLORER = createBlockExplorer({
     return "";
   },
   getAddressUrl: (address: string) => `${AELF_EXPLORER_URL}/address/${address}`,
+  getProposalUrl: (proposalId: string) =>
+    `${AELF_EXPLORER_URL}/proposal/proposalsDetail/${proposalId}`,
+  getProposalInfo: async (proposalId: string) => {
+    const res = await fetch(
+      `${AELF_EXPLORER_URL}/api/proposal/proposalInfo?proposalId=${proposalId}`
+    );
+    const data: ProposalInfo = await res.json();
+
+    return data;
+  },
 });
 
 const EXPLORERS = [AELF_EXPLORER];

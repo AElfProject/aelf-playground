@@ -5,6 +5,7 @@ import {
 } from "@solana/web3.js";
 // @ts-ignore
 import AElf from "aelf-sdk";
+const { deserializeLog } = AElf.pbUtils;
 
 interface Contract {}
 
@@ -34,12 +35,17 @@ interface GenesisContract extends Contract {
 }
 
 interface AElfChain {
+  currentProvider: {
+    host: string;
+  };
   chain: {
     getTxResult: (txId: string) => Promise<TransactionResult>;
     contractAt: <T>(address: string, wallet: any) => Promise<T>;
+    getContractFileDescriptorSet: (address: string) => Promise<any>;
   };
 }
 
+let cached: Record<string, any> = {};
 export class ConnectionAElf {
   endpoint;
   genesisContract: GenesisContract | undefined;
@@ -198,24 +204,51 @@ export class ConnectionAElf {
     });
 
     if (res) {
-      try {
-        const txResult = await this.aelf.chain.getTxResult(res.TransactionId);
-
-        return txResult;
-      } catch (err: unknown) {
-        const res: TransactionErrorResponse = err as TransactionErrorResponse;
-        throw new TransactionError(res.Error, res);
-      }
+      return await this.getTxResult(res.TransactionId);
     }
 
     return null;
   }
+
+  async getProto(address: string, aelf: AElfChain) {
+    const key = aelf.currentProvider.host + "_" + address;
+    if (!cached[key])
+      cached[key] = await aelf.chain.getContractFileDescriptorSet(address);
+    return AElf.pbjs.Root.fromDescriptor(cached[key]);
+  }
+
+  async getTxResult(txId: string) {
+    try {
+      const txResult = await this.aelf.chain.getTxResult(txId);
+
+      const services = await Promise.all(
+        txResult.Logs.map(
+          async ({ Address }) => await this.getProto(Address, this.aelf)
+        )
+      );
+
+      const deserializedLogs: Array<Record<string, string>> =
+        await deserializeLog(txResult.Logs, services);
+
+      return { ...txResult, deserializedLogs };
+    } catch (err: unknown) {
+      const res: TransactionErrorResponse = err as TransactionErrorResponse;
+      throw new TransactionError(res.Error, res);
+    }
+  }
+}
+
+interface Log {
+  Address: string;
+  Name: string;
+  Indexed: Array<string>;
+  NonIndexed: string | null;
 }
 
 interface TransactionErrorResponse {
   TransactionId: string;
   Status: string;
-  Logs: [];
+  Logs: Array<Log>;
   Bloom: null;
   BlockNumber: 0;
   BlockHash: null;
