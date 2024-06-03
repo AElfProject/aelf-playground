@@ -1,5 +1,13 @@
 services:
   aelf-playground:
-    image: aelf-playground
+    image: yongenaelf/aelf-playground
+  playground-service:
+    image: yongenaelf/playground-service
+  csharp-language-service:
+    image: yongenaelf/monacoroslyncompletionprovider
+  frontend:
+    image: cgr.dev/chainguard/nginx:latest
+    volumes:
+      - ./nginx.compose.conf:/etc/nginx/conf.d/nginx.default.conf
     ports:
       - 8080:8080
