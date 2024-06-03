@@ -168,6 +168,13 @@ module.exports = {
       "Cross-Origin-Opener-Policy": "same-origin",
     };
 
+    devServerConfig.proxy = [
+      {
+        context: ["/playground"],
+        target: "http://localhost:7020",
+      },
+    ];
+
     return devServerConfig;
   },
 };
