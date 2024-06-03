@@ -9,6 +9,7 @@ import {
   PgServer,
   PgSettings,
   PgTerminal,
+  PgView,
   TupleFiles,
 } from "../../utils/pg";
 import { createCmd } from "../create";
@@ -21,15 +22,24 @@ export const build = createCmd({
     PgTerminal.log(PgTerminal.info("Building..."));
 
     let msg;
+    const startTime = performance.now();
     try {
       const output = await processBuild();
       msg = improveOutput(output.stderr);
+      if (output.stderr === "") {
+        PgTerminal.success("Build successful.");
+        PgView.setSidebarPage("Build & Deploy");
+      }
     } catch (e: any) {
       const convertedError = PgTerminal.convertErrorMessage(e.message);
       msg = `Build error: ${convertedError}`;
     } finally {
       PgTerminal.log(msg + "\n");
       PgGlobal.update({ buildLoading: false });
+
+      const timePassed = (performance.now() - startTime) / 1000;
+      msg = `Completed in ${PgCommon.secondsToTime(timePassed)}.`;
+      PgTerminal.log(msg + "\n");
     }
   },
 });

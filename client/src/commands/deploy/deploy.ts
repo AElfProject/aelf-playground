@@ -65,9 +65,6 @@ async function checkDeploy() {
  * @returns the deployment transaction signature if the deployment succeeds
  */
 const processDeploy = async () => {
-  const programPk = PgProgramInfo.pk;
-  if (!programPk) throw new Error("Program id not found.");
-
   // Get connection
   const connection = PgConnection.current;
 
@@ -77,7 +74,6 @@ const processDeploy = async () => {
 
   try {
     const result = await connection.deploy(PgProgramInfo.dll);
-    PgTerminal.log("Transaction ID: " + result?.TransactionId);
     txHash = result?.TransactionId;
   } catch (err) {
     if (err instanceof TransactionError) {
