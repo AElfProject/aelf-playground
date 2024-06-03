@@ -64,6 +64,11 @@ export class PgServer {
     }
 
     const blob = await response.blob();
+
+    if (blob.size === 0) {
+      throw new Error("No response from build server.");
+    }
+
     const buffer = await blob.arrayBuffer();
     return Buffer.from(buffer).toString("hex");
   }
