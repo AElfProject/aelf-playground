@@ -4,7 +4,6 @@ import {
   PgConnection,
   PgGlobal,
   PgProgramInfo,
-  PgServer,
   PgTerminal,
   PgTx,
 } from "../../utils/pg";
@@ -68,13 +67,6 @@ async function checkDeploy() {
 const processDeploy = async () => {
   const programPk = PgProgramInfo.pk;
   if (!programPk) throw new Error("Program id not found.");
-
-  // Regular deploy without custom elf upload
-  let programBuffer = PgProgramInfo.importedProgram?.buffer;
-  if (!programBuffer?.length) {
-    if (!PgProgramInfo.uuid) throw new Error("Program is not built.");
-    programBuffer = await PgServer.deploy(PgProgramInfo.uuid);
-  }
 
   // Get connection
   const connection = PgConnection.current;

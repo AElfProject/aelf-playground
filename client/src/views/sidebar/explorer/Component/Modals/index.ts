@@ -9,4 +9,3 @@ export { NewWorkspace } from "./NewWorkspace";
 export { RenameItem } from "./RenameItem";
 export { RenameWorkspace } from "./RenameWorkspace";
 export { ReplaceItem } from "./ReplaceItem";
-export { Share } from "./Share";

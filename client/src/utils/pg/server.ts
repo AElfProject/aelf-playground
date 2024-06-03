@@ -1,5 +1,6 @@
 import type { TupleFiles } from "./explorer";
 import { ZipFiles } from "./zip-files";
+import { v4 as uuidv4 } from "uuid";
 
 /** Rust `Option` type */
 type Option<T> = T | null | undefined;
@@ -21,15 +22,6 @@ interface BuildRequest {
   }>;
 }
 
-/** `/new` request */
-interface ShareNewRequest {
-  explorer: {
-    files: {
-      [key: string]: { content?: string };
-    };
-  };
-}
-
 export class PgServer {
   /**
    * Build the program files.
@@ -43,108 +35,20 @@ export class PgServer {
   }
 
   /**
-   * Get the program ELF.
-   *
-   * NOTE: The server is only responsible for sending the program binary to the
-   * client. The deployment process is done in the client.
-   *
-   * @param uuid unique project id
-   * @returns the program ELF as `Buffer`
-   */
-  static async deploy(uuid: string) {
-    const response = await this._send(`/deploy/${uuid}`);
-    const arrayBuffer = await response.arrayBuffer();
-    return Buffer.from(arrayBuffer);
-  }
-
-  /**
-   * Get the shared project information.
-   *
-   * @param id share id
-   * @returns the shared project response
-   */
-  static async shareGet(id: string) {
-    /** `/share` response */
-    type ShareResponse = ShareNewRequest["explorer"];
-
-    const response = await this._send(`/share/${id}`, { cache: true });
-    return (await response.json()) as ShareResponse;
-  }
-
-  /**
-   * Share a new project.
-   *
-   * @param req share request
-   * @returns the unique share id
-   */
-  static async shareNew(req: ShareNewRequest) {
-    /** `/new` response is the share id */
-    type ShareNewResponse = string;
-
-    const response = await this._send("/new", {
-      post: { body: JSON.stringify(req) },
-    });
-
-    return (await response.text()) as ShareNewResponse;
-  }
-
-  /** Default playground server URL */
-  private static readonly _DEFAULT_SERVER_URL =
-    "https://playground.test.aelf.dev";
-
-  /** Server URL that is customizable from environment variables */
-  private static readonly _SERVER_URL =
-    process.env.NODE_ENV === "production"
-      ? this._DEFAULT_SERVER_URL
-      : process.env.REACT_APP_SERVER_URL ?? this._DEFAULT_SERVER_URL;
-
-  /**
-   * Send an HTTP request to the Playground server.
-   *
-   * @throws when the response is not OK with the decoded response
-   * @returns the HTTP response
-   */
-  private static async _send(
-    path: string,
-    options?: { post?: { body: string }; cache?: boolean }
-  ) {
-    const requestInit: RequestInit = {};
-
-    if (options?.post) {
-      requestInit.method = "POST";
-      requestInit.headers = {
-        "Content-Type": "application/json",
-      };
-      requestInit.body = options.post.body;
-    }
-
-    if (!options?.cache) {
-      requestInit.cache = "no-store";
-    }
-
-    const response = await fetch(`${this._SERVER_URL}${path}`, requestInit);
-    if (!response.ok) {
-      const message = await response.text();
-      throw new Error(message);
-    }
-
-    return response;
-  }
-
-  /**
    * Send a build request to the Playground server.
    *
    * @throws when the response is not OK with the decoded response
    * @returns the HTTP response
    */
   private static async _build(data: Uint8Array) {
-    const path = "/playground/build";
+    const path = "http://localhost:7020/playground/build";
 
     const formData = new FormData();
+    const filePath = uuidv4() + ".zip";
     formData.append(
       "contractFiles",
-      new Blob([data], { type: "application/zip" }),
-      "playground.zip"
+      new File([data], filePath, { type: "application/zip" }),
+      filePath
     );
 
     const requestInit: RequestInit = {

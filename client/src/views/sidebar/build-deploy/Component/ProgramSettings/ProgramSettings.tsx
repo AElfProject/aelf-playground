@@ -2,10 +2,6 @@ import { FC, ReactNode } from "react";
 import styled, { css } from "styled-components";
 
 import Foldable from "../../../../../components/Foldable";
-import BuildFlags from "./BuildFlags";
-import IDL from "./IDL";
-import ProgramBinary from "./ProgramBinary";
-import ProgramID from "./ProgramID";
 
 /** All program settings */
 const PROGRAM_SETTINGS: ProgramSettingProps[] = [
@@ -16,12 +12,6 @@ const PROGRAM_SETTINGS: ProgramSettingProps[] = [
   //   element: <ProgramID />,
   //   isOpen: true,
   // },
-  {
-    title: "Program binary",
-    description: "Import your program and deploy without failure.",
-    element: <ProgramBinary />,
-    isOpen: true,
-  },
   // TODO: Hide it if it's a Native program
   // {
   //   title: "Build flags",

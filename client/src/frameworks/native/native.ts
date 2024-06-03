@@ -18,9 +18,9 @@ export const native = createFramework({
   },
   getIsCurrent: (files) => {
     for (const [path, content] of files) {
-      if (!path.endsWith(".rs")) continue;
-      const hasEntryPointMacro = content.includes("entrypoint!");
-      if (hasEntryPointMacro) return true;
+      if (!path.endsWith(".csproj")) continue;
+      const hasAElfContracts = content.includes("AElf.Contracts");
+      if (hasAElfContracts) return true;
     }
 
     return false;
