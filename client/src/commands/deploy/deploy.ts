@@ -6,7 +6,6 @@ import {
   PgGlobal,
   PgProgramInfo,
   PgTerminal,
-  PgTx,
 } from "../../utils/pg";
 import { createCmd } from "../create";
 import { isPgConnected } from "../validation";
@@ -94,11 +93,13 @@ export const deploy = createCmd({
         }
 
         const timePassed = (performance.now() - startTime) / 1000;
-        PgTx.notify(info.data.proposal.contractAddress);
 
         msg = `${PgTerminal.success(
           "Deployment successful."
-        )} Completed in ${PgCommon.secondsToTime(timePassed)}.`;
+        )} Completed in ${PgCommon.secondsToTime(timePassed)}.\n
+        View contract on aelf explorer: ${PgBlockExplorer.current.getAddressUrl(
+          info.data.proposal.contractAddress
+        )}.`;
       }
     } catch (e: any) {
       const convertedError = PgTerminal.convertErrorMessage(e.message);
