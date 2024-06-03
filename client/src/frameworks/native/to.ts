@@ -1,4 +1,4 @@
-import { convertToPlaygroundCommon, selectProgram } from "../common";
+import { convertToPlaygroundCommon } from "../common";
 import type { TupleFiles } from "../../utils/pg";
 
 /**
