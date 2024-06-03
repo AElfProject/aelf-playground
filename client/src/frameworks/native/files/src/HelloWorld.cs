@@ -12,7 +12,10 @@ namespace AElf.Contracts.HelloWorld
             // Set the message value in the contract state
             State.Message.Value = input.Value;
             // Emit an event to notify listeners about something happened during the execution of this method
-            Context.Fire(new UpdatedMessage { Value = input.Value });
+            Context.Fire(new UpdatedMessage
+            {
+                Value = input.Value
+            });
             return new Empty();
         }
 
@@ -22,7 +25,11 @@ namespace AElf.Contracts.HelloWorld
             // Retrieve the value from the state
             var value = State.Message.Value;
             // Wrap the value in the return type
-            return new StringValue { Value = value };
+            return new StringValue
+            {
+                Value = value
+            };
         }
     }
+    
 }
