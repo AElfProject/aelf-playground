@@ -11,5 +11,5 @@ export const TUTORIALS = createTutorials({
   ],
   level: "Beginner",
   framework: "Native",
-  languages: ["CSharp", "TypeScript"],
+  languages: ["CSharp", "Protobuf", "TypeScript"],
 });

@@ -6,6 +6,7 @@ import {
   CSharp,
   JavaScript,
   Json,
+  Protobuf,
   Python,
   QuestionMark,
   TypeScript,
@@ -32,6 +33,8 @@ const LangIcon: FC<LangIconProps> = ({ fileName }) => {
         return <Json />;
       case Lang.CSHARP:
         return <CSharp />;
+      case Lang.PROTOBUF:
+        return <Protobuf />;
       default:
         return <QuestionMark />;
     }

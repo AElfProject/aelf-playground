@@ -118,6 +118,8 @@ const getLanguageExtension = (lang: TutorialLanguage) => {
       return ".ts";
     case "CSharp":
       return ".cs";
+    case "Protobuf":
+      return ".proto";
   }
 };
 

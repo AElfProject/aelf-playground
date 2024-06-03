@@ -8,7 +8,7 @@ export const TUTORIAL_FRAMEWORKS: readonly FrameworkName[] = [
   "Native",
 ] as const;
 
-export const TUTORIAL_LANGUAGES = ["TypeScript", "CSharp"] as const;
+export const TUTORIAL_LANGUAGES = ["TypeScript", "CSharp", "Protobuf"] as const;
 
 export const TUTORIAL_CATEGORIES = [
   "Compression",

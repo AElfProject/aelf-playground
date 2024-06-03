@@ -41,7 +41,7 @@ export class PgServer {
    * @returns the HTTP response
    */
   private static async _build(data: Uint8Array) {
-    const path = "http://localhost:7020/playground/build";
+    const path = "/playground/build";
 
     const formData = new FormData();
     const filePath = uuidv4() + ".zip";

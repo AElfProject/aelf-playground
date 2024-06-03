@@ -1379,6 +1379,8 @@ export class PgExplorer {
         return Lang.JSON;
       case "cs":
         return Lang.CSHARP;
+      case "proto":
+        return Lang.PROTOBUF;
       default:
         return null;
     }
