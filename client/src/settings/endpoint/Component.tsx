@@ -2,7 +2,6 @@ import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 
 import Input from "../../components/Input";
-import Link from "../../components/Link";
 import Modal from "../../components/Modal";
 import Select from "../../components/Select";
 import Text from "../../components/Text";
@@ -86,9 +85,7 @@ const CustomEndpoint = () => {
         />
 
         <InfoText icon={<Info color="info" />}>
-          Check out the list of{" "}
-          <Link href="https://solana.com/rpc">RPC providers</Link> if you don't
-          have a custom endpoint.
+          For example, http://localhost:1234/.
         </InfoText>
       </Content>
     </Modal>
