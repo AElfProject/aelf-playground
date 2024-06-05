@@ -5,7 +5,7 @@ import type { OrString } from "../types";
 
 /** All packages that are allowed to be used in client/test code */
 export type ClientPackageName =<PACKAGE_NAMES>
-  | "solana-playground";
+  | "aelf-playground";
 
 export class PgClientPackage {
   /**
