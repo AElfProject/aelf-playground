@@ -1,4 +1,4 @@
-declare module "aelf-playground" {
+declare module "solana-playground" {
   import * as web3 from "@solana/web3.js";
 
   interface DefaultWallet {

@@ -191,7 +191,7 @@ const addLib = (disposableType: DisposableType, lib: string) => {
     monaco.languages.typescript.typescriptDefaults.addExtraLib(
       lib.includes("declare module")
         ? lib
-        : declareModule("aelf-playground", lib),
+        : declareModule("solana-playground", lib),
       // `anchor.workspace` is not getting disposed without file path
       `/disposables/${disposableType}.d.ts`
     );

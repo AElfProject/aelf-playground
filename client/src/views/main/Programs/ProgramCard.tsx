@@ -23,7 +23,7 @@ export type ProgramCardProps = {
   repo: string;
   /**
    * Theoratically we should be able to get the icon URL from the repository
-   * URL e.g. "https://github.com/aelf-playground.png", but unfortunately
+   * URL e.g. "https://github.com/solana-playground.png", but unfortunately
    * github.com doesn't respond with CORS headers so we can't use it with the
    * following request headers:
    * ```
