@@ -4,7 +4,7 @@ import { PgExplorer } from "./explorer";
 
 export class PgFs {
   /** Async `indexedDB` based file system instance */
-  private static _fs = new FS("solana-playground").promises;
+  private static _fs = new FS("aelf-playground").promises;
 
   /**
    * Write a file.

@@ -99,7 +99,6 @@ export class PgTx {
 
     // Caching the blockhash will result in getting the same tx signature when
     // using the same tx data.
-    // https://github.com/solana-playground/solana-playground/issues/116
     let txHash;
     try {
       txHash = await connection.sendRawTransaction(tx.serialize(), {

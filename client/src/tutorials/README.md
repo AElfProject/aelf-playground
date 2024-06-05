@@ -1,6 +1,6 @@
 # Tutorials
 
-Playground now supports [tutorials](https://beta.solpg.io/tutorials) natively with Markdown text or custom React components.
+Playground now supports [tutorials](https://playground.test.aelf.dev/tutorials) natively with Markdown text or custom React components.
 
 ## How to add a tutorial
 
@@ -14,7 +14,7 @@ There are **3** steps for adding a tutorial:
 
 1. Fork the repository
 
-   Fork the playground repository on Github and [run locally](https://github.com/solana-playground/solana-playground/blob/master/README.md#run-locally).
+   Fork the playground repository on Github and [run locally](https://github.com/yongenaelf/aelf-playground/blob/master/README.md#run-locally).
 
 2. Create a tutorial component
 
@@ -43,7 +43,7 @@ There are **3** steps for adding a tutorial:
 
 ## Storing assets
 
-Tutorial assets can be added to the [assets repository](https://github.com/solana-playground/assets) by creating a pull request.
+Tutorial assets can be added to the [assets repository](https://github.com/yongenaelf/aelf-playground-assets) by creating a pull request.
 
 After your assets are approved, run:
 
