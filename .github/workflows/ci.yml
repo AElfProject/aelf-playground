@@ -137,14 +137,6 @@ jobs:
           path: |
             client/build
 
-      - name: Deploy
-        # Only run this step if the branch is develop
-        if: github.ref == 'refs/heads/develop'
-        run: npx netlify-cli deploy --prod --dir build
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-
   docker:
     name: Docker
     runs-on: ubuntu-latest
