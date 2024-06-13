@@ -43,6 +43,10 @@ yarn --version
 # 1.22.19
 ```
 
+## SonarQube
+
+Added code quality workflow.
+
 ## Contributing
 
 Anyone is welcome to contribute to **AElf Playground** no matter how big or small.
