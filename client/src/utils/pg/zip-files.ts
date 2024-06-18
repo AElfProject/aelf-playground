@@ -4,7 +4,6 @@ import type { Zippable } from "fflate";
 
 export function ZipFiles(files: TupleFiles) {
   const data: Zippable = files.reduce((acc, [path, str]) => {
-    if (path.startsWith("/")) path = path.slice(1);
     acc[path] = strToU8(str);
 
     return acc;

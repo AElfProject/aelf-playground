@@ -113,7 +113,8 @@ const getBuildFiles = () => {
     const buildPath = PgCommon.joinPaths(
       PgExplorer.PATHS.ROOT_DIR_PATH,
       PgExplorer.getRelativePath(path)
-    );
+    ).slice(4); // remove /src
+
     buildFiles.push([buildPath, content]);
   }
 
