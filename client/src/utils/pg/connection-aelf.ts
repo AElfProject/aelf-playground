@@ -217,9 +217,11 @@ export class ConnectionAElf {
     return AElf.pbjs.Root.fromDescriptor(cached[key]);
   }
 
-  async getTxResult(txId: string) {
+  async getTxResult(txId: string, shouldDeserializeLogs?: boolean) {
     try {
       const txResult = await this.aelf.chain.getTxResult(txId);
+
+      if (!shouldDeserializeLogs) return { ...txResult, deserializedLogs: [] };
 
       const services = await Promise.all(
         txResult.Logs.map(
