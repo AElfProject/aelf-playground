@@ -23,9 +23,9 @@ const Deploy = () => {
 
   const { deployed, error, programInfo } = useProgramInfo();
   const { wallet } = useWallet();
-  const hasProgramKp = !!programInfo.kp;
-  const importedProgram = programInfo.importedProgram;
-  const isImportedProgram = !!importedProgram?.buffer.length;
+  // const hasProgramKp = !!programInfo.kp;
+  // const importedProgram = programInfo.importedProgram;
+  // const isImportedProgram = !!importedProgram?.buffer.length;
 
   const deployButtonText = useMemo(() => {
     return deployState === "cancelled"
@@ -75,21 +75,21 @@ const Deploy = () => {
   );
 
   // First time state
-  if (!deployed && !hasProgramKp) {
-    if (isImportedProgram)
-      return (
-        <Wrapper>
-          <Text>
-            <div>
-              Initial deployment needs a keypair. You can import it from
-              <Bold> Program ID</Bold> settings.
-            </div>
-          </Text>
-        </Wrapper>
-      );
+  // if (!deployed && !hasProgramKp) {
+  //   if (isImportedProgram)
+  //     return (
+  //       <Wrapper>
+  //         <Text>
+  //           <div>
+  //             Initial deployment needs a keypair. You can import it from
+  //             <Bold> Program ID</Bold> settings.
+  //           </div>
+  //         </Text>
+  //       </Wrapper>
+  //     );
 
-    return null;
-  }
+  //   return null;
+  // }
 
   if (error)
     return (
@@ -156,8 +156,8 @@ const Wrapper = styled.div`
   }
 `;
 
-const Bold = styled.span`
-  font-weight: bold;
-`;
+// const Bold = styled.span`
+//   font-weight: bold;
+// `;
 
 export default Deploy;
