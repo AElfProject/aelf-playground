@@ -65,7 +65,7 @@ const createBlockExplorer = (b: BlockExplorerImpl) => {
   return b as BlockExplorer;
 };
 
-const AELF_EXPLORER_URL = "https://explorer-test-side02.aelf.io";
+const AELF_EXPLORER_URL = "/explorer-test-side02";
 const AELF_EXPLORER = createBlockExplorer({
   name: "AElf Explorer",
   url: AELF_EXPLORER_URL,
