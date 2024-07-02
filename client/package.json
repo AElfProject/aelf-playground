@@ -41,7 +41,7 @@
     "@solana/wallet-adapter-base": "^0.9.22",
     "@solana/wallet-adapter-react": "^0.15.32",
     "@solana/web3.js": "*",
-    "aelf-sdk": "^3.4.10",
+    "aelf-sdk": "3.4.12",
     "assert": "^2.0.0",
     "crypto-browserify": "^3.12.0",
     "fflate": "^0.8.2",
@@ -90,7 +90,8 @@
     "@types/uuid": "^9.0.8",
     "circular-dependency-plugin": "^5.2.2",
     "csstype": "^3.1.2",
-    "monaco-editor-webpack-plugin": "^7.0.1"
+    "monaco-editor-webpack-plugin": "^7.0.1",
+    "vitest": "^1.6.0"
   },
   "resolutions": {
     "@solana/buffer-layout": "^4.0.0",
@@ -106,7 +107,8 @@
     "generate": "yarn generate-crates && yarn generate-packages",
     "generate-crates": "node scripts/generate-crates.mjs",
     "generate-packages": "node scripts/generate-packages.mjs",
-    "sync-readme": "node scripts/sync-readme.mjs"
+    "sync-readme": "node scripts/sync-readme.mjs",
+    "test": "vitest"
   },
   "eslintConfig": {
     "extends": [
