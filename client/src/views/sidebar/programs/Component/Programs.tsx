@@ -20,7 +20,7 @@ const Programs = () => {
     const { dispose } = PgRouter.onDidChangePath((path) => {
       if (!path.startsWith(PROGRAMS_PATH)) {
         PgView.setSidebarPage((state) => {
-          if (state === "Programs") return "Explorer";
+          // if (state === "Programs") return "Explorer";
           return state;
         });
       }
