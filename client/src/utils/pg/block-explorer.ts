@@ -72,9 +72,10 @@ const AELF_EXPLORER = createBlockExplorer({
   getClusterParam: () => {
     return "";
   },
-  getAddressUrl: (address: string) => `${AELF_EXPLORER_URL}/address/${address}`,
+  getAddressUrl: (address: string) =>
+    `https:/${AELF_EXPLORER_URL}.aelf.io/address/${address}`,
   getProposalUrl: (proposalId: string) =>
-    `${AELF_EXPLORER_URL}/proposal/proposalsDetail/${proposalId}`,
+    `https:/${AELF_EXPLORER_URL}.aelf.io/proposal/proposalsDetail/${proposalId}`,
   getProposalInfo: async (proposalId: string) => {
     const res = await fetch(
       `${AELF_EXPLORER_URL}/api/proposal/proposalInfo?proposalId=${proposalId}`
