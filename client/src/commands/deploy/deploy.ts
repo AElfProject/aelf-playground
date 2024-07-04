@@ -56,9 +56,7 @@ export const deploy = createCmd({
           throw new Error("Deployment failed.");
         }
 
-        txResult = await PgConnection.current.getTxResult(txHash, true);
-
-        const proposalId = txResult.deserializedLogs.find(
+        const proposalId = (await txResult.deserializeLogs())?.find(
           (i) => typeof i.proposalId === "string"
         )?.proposalId;
 
@@ -67,6 +65,18 @@ export const deploy = createCmd({
         }
 
         let info = await PgBlockExplorer.current.getProposalInfo(proposalId);
+
+        while (
+          info.msg !== "success" &&
+          performance.now() - startTime < 1000 * 60 * 2 // wait 2 minutes, if longer, exit
+        ) {
+          PgTerminal.log(
+            `${PgTerminal.info("Checking proposal info...")} ${info.msg}`,
+            { newLine: true }
+          );
+          await PgCommon.sleep(5000);
+          info = await PgBlockExplorer.current.getProposalInfo(proposalId);
+        }
 
         if (info.msg !== "success") {
           throw new Error("Proposal info not found.");
