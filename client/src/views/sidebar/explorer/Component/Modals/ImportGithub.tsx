@@ -92,7 +92,7 @@ export const ImportGithub = () => {
 };
 
 const GITHUB_PROGRAM_URL =
-  "https://github.com/solana-developers/program-examples/tree/main/basics/create-account/anchor";
+  "https://github.com/AElfProject/aelf-developer-tools/tree/master/templates/HelloWorldContract";
 
 const VIEW_URL = PgCommon.getPathUrl(GITHUB_PROGRAM_URL);
 
