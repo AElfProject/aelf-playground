@@ -6,7 +6,10 @@ import Img from "../../Img";
 import Link from "../../Link";
 import { ResourceProps, RESOURCES } from "./resources";
 import { TutorialProps, TUTORIALS } from "./tutorials";
-import { External, ShortArrow } from "../../Icons";
+import {
+  External,
+  // ShortArrow
+} from "../../Icons";
 import { Id, PROJECT_NAME } from "../../../constants";
 import { PgTheme } from "../../../utils/pg";
 
@@ -43,12 +46,12 @@ const Home = () => {
             ))}
           </TutorialCardsWrapper>
 
-          <Link href="/tutorials">
+          {/* <Link href="/tutorials">
             <PlaygroundTutorialsButton kind="icon">
               Playground tutorials
               <ShortArrow />
             </PlaygroundTutorialsButton>
-          </Link>
+          </Link> */}
         </TutorialsWrapper>
       </ContentWrapper>
     </Wrapper>
@@ -207,19 +210,19 @@ const TutorialIcon = styled(Img)`
 
 const TutorialTitle = styled.span``;
 
-const PlaygroundTutorialsButton = styled(Button)`
-  ${({ theme }) => css`
-    color: ${theme.colors.default.primary};
-    padding: 0.25rem 0.5rem;
+// const PlaygroundTutorialsButton = styled(Button)`
+//   ${({ theme }) => css`
+//     color: ${theme.colors.default.primary};
+//     padding: 0.25rem 0.5rem;
 
-    svg {
-      margin-left: 0.25rem;
-    }
+//     svg {
+//       margin-left: 0.25rem;
+//     }
 
-    &::hover {
-      text-decoration: underline;
-    }
-  `}
-`;
+//     &::hover {
+//       text-decoration: underline;
+//     }
+//   `}
+// `;
 
 export default Home;
