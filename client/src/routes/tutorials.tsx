@@ -21,7 +21,7 @@ export const tutorials = PgRouter.create({
       switch (state) {
         case "Explorer":
         case "Build & Deploy":
-        case "Test":
+          // case "Test":
           PgRouter.navigate();
       }
     });
