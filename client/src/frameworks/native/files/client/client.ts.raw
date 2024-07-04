@@ -1,4 +1,0 @@
-// Client
-console.log("My address:", pg.wallet.wallet.address);
-const balance = await pg.connection.getBalance(pg.wallet.wallet.address);
-console.log(`My balance: ${balance / 100000000} ELF`);
