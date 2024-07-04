@@ -6,6 +6,7 @@ import {
   PgGlobal,
   PgProgramInfo,
   PgTerminal,
+  PgWallet,
 } from "../../utils/pg";
 import { createCmd } from "../create";
 import { isPgConnected } from "../validation";
@@ -18,6 +19,7 @@ export const deploy = createCmd({
   name: "deploy",
   description: "Deploy your program",
   run: async () => {
+    PgWallet.switch(0);
     PgGlobal.update({ deployState: "loading" });
 
     let progress = 0.1;
