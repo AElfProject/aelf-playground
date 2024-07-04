@@ -20,8 +20,8 @@ import { ReplaceItem } from "./Modals";
 import {
   Plus,
   ShortArrow,
-  TestTube,
-  Triangle,
+  // TestTube,
+  // Triangle,
   Wrench,
 } from "../../../../components/Icons";
 import { ClassName, Id, ItemError } from "../../../../constants";
@@ -88,7 +88,7 @@ const Folders = () => {
             />
 
             {/* Client and tests */}
-            <SectionTopWrapper>
+            {/* <SectionTopWrapper>
               <SectionHeader>Client</SectionHeader>
               {folders.includes(PgExplorer.PATHS.CLIENT_DIRNAME) ? (
                 <SectionButton
@@ -126,7 +126,7 @@ const Folders = () => {
                   f === PgExplorer.PATHS.TESTS_DIRNAME
               )}
               relativeRootPath={relativeRootPath}
-            />
+            /> */}
 
             {/* Other */}
             {otherFolders.length > 0 && (
