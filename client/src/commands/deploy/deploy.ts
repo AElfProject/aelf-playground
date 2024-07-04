@@ -84,10 +84,9 @@ export const deploy = createCmd({
           throw new Error("Proposal info not found.");
         }
 
-        let status = info.data.proposal.status,
-          isContractDeployed = info.data.proposal.isContractDeployed;
+        let status = info.data.proposal.status;
 
-        while (status !== "expired" && isContractDeployed === false) {
+        while (status === "pending") {
           PgTerminal.log(
             `${PgTerminal.info("Checking proposal status...")} ${status}`,
             { newLine: true }
@@ -96,14 +95,24 @@ export const deploy = createCmd({
 
           info = await PgBlockExplorer.current.getProposalInfo(proposalId);
           status = info.data.proposal.status;
-          isContractDeployed = info.data.proposal.isContractDeployed;
 
           progress += 0.1;
           PgTerminal.setProgress(progress);
         }
 
-        if (status === "expired" && isContractDeployed === false) {
+        if (status === "expired") {
           throw new Error("Contract not deployed after proposal expiry.");
+        }
+
+        const releasedTxId = info.data.proposal.releasedTxId;
+        const releasedTxInfo = await PgConnection.current.getTxResult(
+          releasedTxId
+        );
+        const logs = await releasedTxInfo.deserializeLogs();
+        const address = logs.find((i) => !!i.address)?.address;
+
+        if (address === undefined) {
+          throw new Error("Contract address missing.");
         }
 
         const timePassed = (performance.now() - startTime) / 1000;
@@ -112,7 +121,7 @@ export const deploy = createCmd({
           "Deployment successful."
         )} Completed in ${PgCommon.secondsToTime(timePassed)}.\n
         View contract on aelf explorer: ${PgBlockExplorer.current.getAddressUrl(
-          info.data.proposal.contractAddress
+          address
         )} .`;
       }
     } catch (e: any) {
