@@ -10,6 +10,7 @@ option csharp_namespace = "AElf.Contracts.HelloWorld";
 service HelloWorld {
   // The name of the state class the smart contract is going to use to access blockchain state
   option (aelf.csharp_state) = "AElf.Contracts.HelloWorld.HelloWorldState";
+  option (aelf.base) = "Protobuf/reference/acs12.proto";
 
   // Actions (methods that modify contract state)
   // Stores the value in contract state
