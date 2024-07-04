@@ -113,7 +113,7 @@ export const deploy = createCmd({
         )} Completed in ${PgCommon.secondsToTime(timePassed)}.\n
         View contract on aelf explorer: ${PgBlockExplorer.current.getAddressUrl(
           info.data.proposal.contractAddress
-        )}.`;
+        )} .`;
       }
     } catch (e: any) {
       const convertedError = PgTerminal.convertErrorMessage(e.message);
