@@ -5,6 +5,6 @@ export * from "./clear";
 export * from "./connect";
 export * from "./deploy";
 export * from "./help";
-export * from "./prettier";
-export * from "./run-and-test";
+// export * from "./prettier";
+// export * from "./run-and-test";
 export * from "./run-last-cmd";

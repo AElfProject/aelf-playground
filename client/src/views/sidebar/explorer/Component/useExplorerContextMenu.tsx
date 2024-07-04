@@ -98,11 +98,11 @@ export const useExplorerContextMenu = () => {
   }, []);
 
   const addClient = useCallback(async () => {
-    await PgCommand.run.run();
+    // await PgCommand.run.run();
   }, []);
 
   const addTests = useCallback(async () => {
-    await PgCommand.test.run();
+    // await PgCommand.test.run();
   }, []);
 
   const runBuild = useCallback(async () => {
@@ -113,20 +113,30 @@ export const useExplorerContextMenu = () => {
     await PgCommand.deploy.run();
   }, []);
 
-  const runClient = useCallback(async () => {
-    await PgCommand.run.run(getPath());
-  }, [getPath]);
+  const runClient = useCallback(
+    async () => {
+      // await PgCommand.run.run(getPath());
+    },
+    [
+      // getPath
+    ]
+  );
 
-  const runTest = useCallback(async () => {
-    await PgCommand.test.run(getPath());
-  }, [getPath]);
+  const runTest = useCallback(
+    async () => {
+      // await PgCommand.test.run(getPath());
+    },
+    [
+      // getPath
+    ]
+  );
 
   const runClientFolder = useCallback(async () => {
-    await PgCommand.run.run();
+    // await PgCommand.run.run();
   }, []);
 
   const runTestFolder = useCallback(async () => {
-    await PgCommand.test.run();
+    // await PgCommand.test.run();
   }, []);
 
   return {
