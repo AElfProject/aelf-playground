@@ -56,9 +56,7 @@ export const deploy = createCmd({
           throw new Error("Deployment failed.");
         }
 
-        txResult = await PgConnection.current.getTxResult(txHash, true);
-
-        const proposalId = txResult.deserializedLogs.find(
+        const proposalId = (await txResult.deserializeLogs())?.find(
           (i) => typeof i.proposalId === "string"
         )?.proposalId;
 

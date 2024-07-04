@@ -217,22 +217,24 @@ export class ConnectionAElf {
     return AElf.pbjs.Root.fromDescriptor(cached[key]);
   }
 
-  async getTxResult(txId: string, shouldDeserializeLogs?: boolean) {
+  async getTxResult(txId: string) {
     try {
       const txResult = await this.aelf.chain.getTxResult(txId);
 
-      if (!shouldDeserializeLogs) return { ...txResult, deserializedLogs: [] };
+      const deserializeLogs = async () => {
+        const services = await Promise.all(
+          txResult.Logs.map(
+            async ({ Address }) => await this.getProto(Address, this.aelf)
+          )
+        );
 
-      const services = await Promise.all(
-        txResult.Logs.map(
-          async ({ Address }) => await this.getProto(Address, this.aelf)
-        )
-      );
+        const deserializedLogs: Array<Record<string, string>> =
+          await deserializeLog(txResult.Logs, services);
 
-      const deserializedLogs: Array<Record<string, string>> =
-        await deserializeLog(txResult.Logs, services);
+        return deserializedLogs;
+      };
 
-      return { ...txResult, deserializedLogs };
+      return { ...txResult, deserializeLogs };
     } catch (err: unknown) {
       const res: TransactionErrorResponse = err as TransactionErrorResponse;
       throw new TransactionError(res.Error, res);
