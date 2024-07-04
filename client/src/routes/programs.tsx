@@ -2,7 +2,7 @@ import {
   // PgCommon,
   // PgExplorer,
   PgRouter,
-  PgView,
+  // PgView,
 } from "../utils/pg";
 
 export const programs = PgRouter.create({
@@ -10,19 +10,16 @@ export const programs = PgRouter.create({
   handle: () => {
     // Set sidebar
     // PgView.setSidebarPage("Programs");
-    PgView.setSidebarPage("Tutorials");
-
+    // PgView.setSidebarPage("Tutorials");
     // Set main view
     // PgView.setMain(async () => {
     //   // Initialize explorer
     //   await PgExplorer.init();
-
     //   // Fetch programs
     //   const programs = await PgCommon.fetchJSON("/programs/programs.json");
     //   const { Programs } = await import("../views/main/Programs");
     //   return <Programs programs={programs} />;
     // });
-
     // Handle sidebar
     // TODO: Handle this in a better way
     // return PgView.onDidChangeSidebarPage((state) => {

@@ -146,7 +146,7 @@ class _PgTutorial {
       // current page modifies the sidebar state, e.g. inside `onMount`
       await PgCommon.sleep(0);
       PgView.setSidebarPage((state) => {
-        if (state === "Tutorials") return "Explorer";
+        // if (state === "Tutorials") return "Explorer";
         return state;
       });
     } else {
@@ -191,7 +191,7 @@ class _PgTutorial {
   /** Finish the current tutorial. */
   static finish() {
     PgTutorial.completed = true;
-    PgView.setSidebarPage("Tutorials");
+    // PgView.setSidebarPage("Tutorials");
   }
 }
 

@@ -4,7 +4,7 @@ export const tutorials = PgRouter.create({
   path: "/tutorials",
   handle: () => {
     // Set sidebar
-    PgView.setSidebarPage("Tutorials");
+    // PgView.setSidebarPage("Tutorials");
 
     // Set main view
     PgView.setMain(async () => {

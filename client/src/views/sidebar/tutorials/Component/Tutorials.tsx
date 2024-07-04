@@ -33,7 +33,7 @@ const Tutorials = () => {
     const { dispose } = PgRouter.onDidChangePath((path) => {
       if (!path.startsWith(TUTORIALS_PATH)) {
         PgView.setSidebarPage((state) => {
-          if (state === "Tutorials") return "Explorer";
+          // if (state === "Tutorials") return "Explorer";
           return state;
         });
       }

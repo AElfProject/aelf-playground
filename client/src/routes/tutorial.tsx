@@ -35,7 +35,7 @@ export const tutorial = PgRouter.create({
         PgView.setSidebarPage();
       } else {
         PgTutorial.view = "about";
-        PgView.setSidebarPage("Tutorials");
+        // PgView.setSidebarPage("Tutorials");
       }
 
       const { default: Tutorial } = await tutorial.elementImport();
@@ -44,14 +44,9 @@ export const tutorial = PgRouter.create({
 
     // Handle sidebar
     const sidebarPage = PgView.onDidChangeSidebarPage((state) => {
-      if (state === "Tutorials") {
-        PgTutorial.update({ view: "about" });
-      } else {
-        // Get whether the tutorial has started
-        const started = PgTutorial.isStarted(tutorial.name);
-        if (started) PgTutorial.update({ view: "main" });
-        else PgRouter.navigate();
-      }
+      const started = PgTutorial.isStarted(tutorial.name);
+      if (started) PgTutorial.update({ view: "main" });
+      else PgRouter.navigate();
     });
 
     return {
