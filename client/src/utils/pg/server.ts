@@ -59,7 +59,7 @@ export class PgServer {
 
     const response = await fetch(`${path}`, requestInit);
     if (!response.ok) {
-      const message = await response.text();
+      const { message } = await response.json();
       throw new Error(message);
     }
 
