@@ -1,10 +1,10 @@
 services:
   aelf-playground:
-    image: yongenaelf/aelf-playground
+    image: aelfactory/aelf-playground
   playground-service:
-    image: yongenaelf/playground-service
+    image: aelfactory/playground-service
   csharp-language-service:
-    image: yongenaelf/monacoroslyncompletionprovider
+    image: aelfactory/monacoroslyncompletionprovider
   frontend:
     image: cgr.dev/chainguard/nginx:latest
     volumes:
