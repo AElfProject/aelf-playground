@@ -11,7 +11,7 @@ export class PgAElfContractTemplates {
    */
   static async import(template: string, projectName: string) {
     // Check whether the repository already exists in user's workspaces
-    const aelfWorkspaceName = `aelf-${template}-${projectName}`;
+    const aelfWorkspaceName = `${template}-${projectName}`;
 
     if (PgExplorer.allWorkspaceNames?.includes(aelfWorkspaceName)) {
       // Switch to the existing workspace
