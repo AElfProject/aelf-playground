@@ -101,7 +101,7 @@ export const ImportFs: FC<ImportFsProps> = (props) => {
         </UploadAreaWrapper>
 
         <StyledText icon={<Info color="info" />}>
-          You can drag & drop a Cargo workspace directory.
+          You can drag & drop a workspace directory.
         </StyledText>
       </Content>
     </Modal>

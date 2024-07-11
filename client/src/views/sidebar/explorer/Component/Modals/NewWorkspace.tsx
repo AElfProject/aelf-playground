@@ -1,16 +1,23 @@
-import { ChangeEvent, FC, useState } from "react";
-import styled, { css } from "styled-components";
+import { ChangeEvent, useLayoutEffect, useState } from "react";
+import styled from "styled-components";
 
-import Img from "../../../../../components/Img";
 import Input from "../../../../../components/Input";
 import Modal from "../../../../../components/Modal";
-import { Fn, PgExplorer, PgFramework } from "../../../../../utils/pg";
+import {
+  PgAElfContractTemplates,
+  PgExplorer,
+  PgFramework,
+} from "../../../../../utils/pg";
+import Select from "../../../../../components/Select";
 
 export const NewWorkspace = () => {
   // Handle user input
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
+  const [templates, setTemplates] = useState<
+    { value: string; label: string }[]
+  >([]);
 
   const handleChange = (ev: ChangeEvent<HTMLInputElement>) => {
     setName(ev.target.value);
@@ -18,16 +25,19 @@ export const NewWorkspace = () => {
   };
 
   const newWorkspace = async () => {
-    const { importFiles, defaultOpenFile } = PgFramework.frameworks.find(
-      (f) => f.name === selected
-    )!;
-    const { files } = await importFiles();
-
-    await PgExplorer.newWorkspace(name, {
-      files,
-      defaultOpenFile,
-    });
+    await PgAElfContractTemplates.import(selected!, name);
   };
+
+  useLayoutEffect(() => {
+    (async () => {
+      const names = await PgAElfContractTemplates.getTemplateNames();
+      setTemplates(names.map((i) => ({ value: i, label: i })));
+    })();
+
+    return () => {
+      setTemplates([]);
+    };
+  }, []);
 
   return (
     <Modal
@@ -54,18 +64,16 @@ export const NewWorkspace = () => {
         </WorkspaceNameWrapper>
 
         <FrameworkSectionWrapper>
-          <MainText>Choose a framework</MainText>
+          <MainText>Choose a template</MainText>
           <FrameworksWrapper>
-            {PgFramework.frameworks.map((f) => (
-              <Framework
-                key={f.name}
-                isSelected={selected === f.name}
-                select={() =>
-                  setSelected((s) => (s === f.name ? null : f.name))
-                }
-                {...f}
-              />
-            ))}
+            <Select
+              // @ts-expect-error
+              options={templates}
+              value={selected}
+              onChange={(e) => {
+                setSelected(e);
+              }}
+            />
           </FrameworksWrapper>
         </FrameworkSectionWrapper>
       </Content>
@@ -94,72 +102,4 @@ const FrameworkSectionWrapper = styled.div`
 const FrameworksWrapper = styled.div`
   display: flex;
   gap: 2rem;
-`;
-
-interface FrameworkProps extends Framework {
-  isSelected: boolean;
-  select: Fn;
-}
-
-const Framework: FC<FrameworkProps> = ({
-  name,
-  language,
-  icon,
-  circleImage,
-  isSelected,
-  select,
-}) => (
-  <FrameworkWrapper isSelected={isSelected} onClick={select}>
-    <FrameworkImageWrapper circle={circleImage}>
-      <Img src={icon} alt={name} />
-    </FrameworkImageWrapper>
-    <FrameworkName>
-      {name}({language})
-    </FrameworkName>
-  </FrameworkWrapper>
-);
-
-const FrameworkWrapper = styled.div<{ isSelected?: boolean }>`
-  ${({ theme, isSelected }) => css`
-    width: fit-content;
-    padding: 1rem;
-    border: 1px solid ${theme.colors.default.border};
-    border-radius: ${theme.default.borderRadius};
-    transition: all ${theme.default.transition.duration.medium}
-      ${theme.default.transition.type};
-    border-color: ${isSelected && theme.colors.default.primary};
-    & div:nth-child(2) {
-      color: ${isSelected && theme.colors.default.textPrimary};
-    }
-
-    &:hover {
-      cursor: pointer;
-      border-color: ${!isSelected && theme.colors.default.textPrimary};
-
-      & div:nth-child(2) {
-        color: ${theme.colors.default.textPrimary};
-      }
-    }
-  `}
-`;
-
-const FrameworkImageWrapper = styled.div<{ circle?: boolean }>`
-  ${({ circle }) => css`
-    width: 8rem;
-    height: 8rem;
-    display: flex;
-    align-items: center;
-
-    & > img {
-      width: 100%;
-      border-radius: ${circle && "50%"};
-    }
-  `}
-`;
-
-const FrameworkName = styled.div`
-  margin-top: 0.75rem;
-  text-align: center;
-  font-weight: bold;
-  color: ${({ theme }) => theme.colors.default.textSecondary};
 `;
