@@ -3,11 +3,7 @@ import styled from "styled-components";
 
 import Input from "../../../../../components/Input";
 import Modal from "../../../../../components/Modal";
-import {
-  PgAElfContractTemplates,
-  PgExplorer,
-  PgFramework,
-} from "../../../../../utils/pg";
+import { PgAElfContractTemplates, PgExplorer } from "../../../../../utils/pg";
 import Select from "../../../../../components/Select";
 
 export const NewWorkspace = () => {
