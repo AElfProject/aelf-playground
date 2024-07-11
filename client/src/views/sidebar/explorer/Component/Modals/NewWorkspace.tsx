@@ -10,7 +10,10 @@ export const NewWorkspace = () => {
   // Handle user input
   const [name, setName] = useState("");
   const [error, setError] = useState("");
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<{
+    value: string;
+    label: string;
+  } | null>(null);
   const [templates, setTemplates] = useState<
     { value: string; label: string }[]
   >([]);
@@ -21,7 +24,7 @@ export const NewWorkspace = () => {
   };
 
   const newWorkspace = async () => {
-    await PgAElfContractTemplates.import(selected!, name);
+    await PgAElfContractTemplates.import(selected?.value!, name);
   };
 
   useLayoutEffect(() => {
@@ -63,7 +66,7 @@ export const NewWorkspace = () => {
           <MainText>Choose a template</MainText>
           <FrameworksWrapper>
             <Select
-              // @ts-expect-error
+              menuPosition="fixed"
               options={templates}
               value={selected}
               onChange={(e) => {
