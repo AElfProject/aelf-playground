@@ -202,7 +202,7 @@ jobs:
               workflow_id: 'playground-deploy.yaml',
               ref: 'main',
               inputs: {
-                env: '${{ github.ref == "refs/heads/main" && "production" || "development" }}',
+                env: '${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}',
                 appName: 'playground-frontend',
                 commit_sha: 'sha-${{ steps.vars.outputs.short_sha }}',
               }
