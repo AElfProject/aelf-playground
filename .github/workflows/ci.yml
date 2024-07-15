@@ -3,7 +3,7 @@ name: CI
 on:
   workflow_dispatch:
   push:
-    branches: ["develop"]
+    branches: ["develop", "main"]
 
 jobs:
   format_client:
@@ -141,6 +141,8 @@ jobs:
   docker:
     name: Docker
     runs-on: ubuntu-latest
+    environment: 
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'development' }}
     needs: [build]
     steps:
       - uses: actions/checkout@v4
@@ -200,7 +202,7 @@ jobs:
               workflow_id: 'playground-deploy.yaml',
               ref: 'main',
               inputs: {
-                env: 'development',
+                env: '${{ github.ref == "refs/heads/main" && "production" || "development" }}',
                 appName: 'playground-frontend',
                 commit_sha: 'sha-${{ steps.vars.outputs.short_sha }}',
               }
