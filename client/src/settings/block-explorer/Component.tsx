@@ -4,7 +4,7 @@ import Select from "../../components/Select";
 import { PgSettings, UnionToTuple } from "../../utils/pg";
 
 type Option = UnionToTuple<typeof PgSettings["other"]["blockExplorer"]>;
-const OPTIONS = (["AElf Explorer"] as Option).map((o) => ({
+const OPTIONS = (["aelf Explorer"] as Option).map((o) => ({
   value: o,
   label: o,
 }));

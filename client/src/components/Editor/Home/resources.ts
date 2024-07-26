@@ -9,7 +9,7 @@ export interface ResourceProps {
 export const RESOURCES: ResourceProps[] = [
   {
     title: "Learn",
-    text: "Detailed explanations and guides for building applications on AElf.",
+    text: "Detailed explanations and guides for building applications on aelf.",
     url: "https://docs.aelf.com/",
     src: "/icons/platforms/aelf.png",
   },

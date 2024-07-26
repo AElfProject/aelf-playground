@@ -45,7 +45,7 @@ interface Settings {
   /** Other settings */
   other: {
     /** Default block explorer */
-    blockExplorer: "AElf Explorer";
+    blockExplorer: "aelf Explorer";
   };
   /** Wallet settings */
   wallet: {
@@ -76,7 +76,7 @@ const defaultState: Settings = {
     showTx: true,
   },
   other: {
-    blockExplorer: "AElf Explorer",
+    blockExplorer: "aelf Explorer",
   },
   wallet: {
     automaticAirdrop: true,
