@@ -38,21 +38,23 @@ const Home = () => {
           </ResourceCardsWrapper>
         </ResourcesWrapper>
 
-        <TutorialsWrapper>
-          <TutorialsTitle>Tutorials</TutorialsTitle>
-          <TutorialCardsWrapper>
-            {TUTORIALS.map((t, i) => (
-              <Tutorial key={i} {...t} />
-            ))}
-          </TutorialCardsWrapper>
+        {TUTORIALS.length > 0 ? (
+          <TutorialsWrapper>
+            <TutorialsTitle>Tutorials</TutorialsTitle>
+            <TutorialCardsWrapper>
+              {TUTORIALS.map((t, i) => (
+                <Tutorial key={i} {...t} />
+              ))}
+            </TutorialCardsWrapper>
 
-          {/* <Link href="/tutorials">
+            {/* <Link href="/tutorials">
             <PlaygroundTutorialsButton kind="icon">
               Playground tutorials
               <ShortArrow />
             </PlaygroundTutorialsButton>
           </Link> */}
-        </TutorialsWrapper>
+          </TutorialsWrapper>
+        ) : null}
       </ContentWrapper>
     </Wrapper>
   );
