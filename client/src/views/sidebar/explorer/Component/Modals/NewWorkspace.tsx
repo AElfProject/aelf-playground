@@ -84,6 +84,12 @@ export const NewWorkspace = () => {
               menuPosition="fixed"
               options={templates}
               value={selected}
+              styles={{
+                container: (base) => ({
+                  ...base,
+                  width: "100%",
+                }),
+              }}
               onChange={(e) => {
                 setSelected(e);
               }}
