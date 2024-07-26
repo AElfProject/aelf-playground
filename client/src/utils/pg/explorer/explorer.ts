@@ -1089,7 +1089,6 @@ export class PgExplorer {
       console.log("Couldn't setup files:", e.message);
 
       await this.deleteWorkspace();
-      
     }
 
     // Runs when `indexedDB` is empty
