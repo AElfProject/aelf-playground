@@ -9,7 +9,7 @@ const Explorer = () => {
   const { explorer } = useExplorer({ checkInitialization: true });
 
   if (!explorer?.isTemporary) {
-    if (!explorer?.allWorkspaceNames) return null;
+    if (!explorer?.allWorkspaceNames) return <NoWorkspace />;
     if (explorer.allWorkspaceNames.length === 0) return <NoWorkspace />;
   }
 

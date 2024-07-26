@@ -6,6 +6,21 @@ import Modal from "../../../../../components/Modal";
 import { PgAElfContractTemplates, PgExplorer } from "../../../../../utils/pg";
 import Select from "../../../../../components/Select";
 
+const getLabel = (v: string) => {
+  switch (v) {
+    case "aelf":
+      return "Hello World";
+    case "aelf-lottery":
+      return "Lottery Game";
+    case "aelf-simple-dao":
+      return "Vote";
+    case "aelf-nft-sale":
+      return "NFT";
+    default:
+      return v;
+  }
+};
+
 export const NewWorkspace = () => {
   // Handle user input
   const [name, setName] = useState("");
@@ -30,7 +45,7 @@ export const NewWorkspace = () => {
   useLayoutEffect(() => {
     (async () => {
       const names = await PgAElfContractTemplates.getTemplateNames();
-      setTemplates(names.map((i) => ({ value: i, label: i })));
+      setTemplates(names.map((i) => ({ value: i, label: getLabel(i) })));
     })();
 
     return () => {
@@ -69,6 +84,12 @@ export const NewWorkspace = () => {
               menuPosition="fixed"
               options={templates}
               value={selected}
+              styles={{
+                container: (base) => ({
+                  ...base,
+                  width: "100%",
+                }),
+              }}
               onChange={(e) => {
                 setSelected(e);
               }}

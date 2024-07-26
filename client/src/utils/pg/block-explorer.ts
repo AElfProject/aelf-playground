@@ -67,7 +67,7 @@ const createBlockExplorer = (b: BlockExplorerImpl) => {
 
 const AELF_EXPLORER_URL = "/explorer-test-side02";
 const AELF_EXPLORER = createBlockExplorer({
-  name: "AElf Explorer",
+  name: "aelf Explorer",
   url: AELF_EXPLORER_URL,
   getClusterParam: () => {
     return "";

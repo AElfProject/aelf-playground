@@ -2,8 +2,8 @@ import { createTutorials } from "./create";
 
 /** All visible tutorials at `/tutorials`(in order) */
 export const TUTORIALS = createTutorials({
-  name: "Hello AElf",
-  description: "Hello world program with Native AElf.",
+  name: "Hello aelf",
+  description: "Hello world program with Native aelf.",
   authors: [
     {
       name: "aelf",
