@@ -1,6 +1,8 @@
-# AElf Playground
+# aelf Playground
 
-[AElf Playground](https://playground.aelf.dev) allows you to quickly develop, deploy and test [AElf](https://docs.aelf.io) smart contracts from browsers.
+**⚠️ THIS REPO IS DEPRECIATED. Please see https://github.com/AElfProject/aelf-playground-next for the new version. 
+
+aelf Playground allows you to quickly develop, deploy and test [aelf](https://docs.aelf.com) smart contracts from browsers.
 
 > **Note:** Playground is still in **alpha** and everything is subject to change.
 
